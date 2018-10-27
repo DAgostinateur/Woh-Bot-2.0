@@ -1,0 +1,10 @@
+
+hidden.py
+*.pyc
+.idea/workspace.xml
+*.iml
+*.xml
+hidden.py
+*.json
+.idea/inspectionProfiles/Project_Default.xml
+*.xml
