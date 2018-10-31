@@ -2,9 +2,18 @@ import discord
 from datetime import datetime
 
 from features.birthday import birthday_handler
+from features.admin import admin_handler
+from features import special_reactions, command_handler
+
 import settings
 import hidden
 import util
+
+
+# TODO:
+#
+#
+#
 
 
 class WohBot(discord.Client):
@@ -15,10 +24,15 @@ class WohBot(discord.Client):
 
         util.check_folder(self.data_folder)
 
+        self.prefix = "!!!"
+        self.default_presence = "Prefix: " + self.prefix
         self.owner = None
         self.settings = settings.Settings()
+
+        self.admin_handler = admin_handler.AdminHandler(self)
         self.birthday_handler = birthday_handler.BirthdayHandler(self)
-        self.prefix = "!!!"
+        self.special_reactions = special_reactions.SpecialReactions(self)
+        self.command_handler = command_handler.CommandHandler(self)
 
         self.loop.create_task(self.birthday_handler.happy_birthday_checker())
 
@@ -27,25 +41,25 @@ class WohBot(discord.Client):
         self.owner = app_info.owner
 
     async def on_ready(self):
-        await client.change_presence(game=discord.Game(name="Prefix: !!!", type=0))
+        await client.change_presence(game=discord.Game(name=self.default_presence, type=0))
         await self._get_client_owner()
 
         print("-------")
         print("Woh Bot 2.0")
         print("-------")
         print("Logged in as {}".format(self.user))
-        print("Creator: {}\n".format(self.owner.name))
+        print("Creator: {}".format(self.owner.name))
+        print("-------\n")
 
     async def on_message(self, message: discord.Message):
         if message.author == self.user:
             return
 
-        if message.content.startswith(self.prefix + "showowner"):
-            await self.send_message(message.channel, self.owner.name)
+        await self.special_reactions.check_message(message)
+        await self.command_handler.check_message(message)
 
-        if 'woh' in message.content.lower():
-            if util.get_custom_emoji(list(self.get_all_emojis()), 'woh') is not None:
-                await self.add_reaction(message, util.get_custom_emoji(list(self.get_all_emojis()), 'woh'))
+        if message.content.startswith(self.prefix + "helpembed"):
+            await self.send_message(message.channel, embed=self.cmd_set_presence.get_help_embedded())
 
     async def on_voice_state_update(self, before: discord.Member, after: discord.Member):
         if before.voice.voice_channel is None and after.voice.voice_channel is not None:

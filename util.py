@@ -1,3 +1,4 @@
+import discord
 import datetime
 import os
 
@@ -16,8 +17,8 @@ def channel_format(channel_id):
     return "<#{}>".format(channel_id)
 
 
-def get_custom_emoji(emoji_list: list, name: str):
-    for emoji in emoji_list:
+def get_custom_emoji(client: discord.Client, name: str):
+    for emoji in client.get_all_emojis():
         if emoji.name.lower() == name.lower():
             return emoji
     return None

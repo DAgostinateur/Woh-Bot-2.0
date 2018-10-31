@@ -17,7 +17,7 @@ class BirthdayHandler(object):
     json_channel_id = "channel_id"
     json_server_id = "server_id"
 
-    def __init__(self, client: discord.Client):
+    def __init__(self, client):
         self.parent_client = client
 
         self.enabled = True
@@ -54,7 +54,16 @@ class BirthdayHandler(object):
         while not self.parent_client.is_closed:
             mm_dd = str(datetime.datetime.today())[5:]
             for channel_bd in self.channel_birthdays:
+                if not self.enabled:
+                    break
+                server = self.parent_client.get_server(channel_bd.server_id)
+                if server is None:
+                    continue
+
                 for user_bd in self.user_birthdays:
+                    if server.get_member(user_bd.user_id) is None:
+                        continue
+
                     if mm_dd == user_bd.birthday_date and channel_bd.server_id == user_bd.server_id:
                         await self.send_birthday_message(channel_bd.channel_id, user_bd.user_id)
 
@@ -62,7 +71,7 @@ class BirthdayHandler(object):
             await asyncio.sleep(util.get_next_day_delta(self.parent_client.settings.get_default_notification_time()))
 
     def get_user_bd(self, user_id, server_id):
-        """Returns a UserBirthday with a user id
+        """Returns a UserBirthday with a user id and a server id
 
         :param user_id:
         :param server_id:
@@ -71,6 +80,7 @@ class BirthdayHandler(object):
         for user_bd in self.user_birthdays:
             if user_bd.user_id == user_id and server_id == user_bd.server_id:
                 return user_bd
+        return None
 
     def get_channel_bd(self, server_id):
         """Returns a ChannelBirthday with a server id
@@ -81,6 +91,7 @@ class BirthdayHandler(object):
         for channel_bd in self.channel_birthdays:
             if channel_bd.server_id == server_id:
                 return channel_bd
+        return None
 
     def get_user_birthdays(self):
         if not os.path.exists(self.user_birthday_file):
