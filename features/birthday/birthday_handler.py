@@ -20,7 +20,6 @@ class BirthdayHandler(object):
     def __init__(self, client):
         self.parent_client = client
 
-        self.enabled = True
         self.user_birthdays = self.get_user_birthdays()
         self.channel_birthdays = self.get_channel_birthdays()
 
@@ -54,8 +53,6 @@ class BirthdayHandler(object):
         while not self.parent_client.is_closed:
             mm_dd = str(datetime.datetime.today())[5:]
             for channel_bd in self.channel_birthdays:
-                if not self.enabled:
-                    break
                 server = self.parent_client.get_server(channel_bd.server_id)
                 if server is None:
                     continue

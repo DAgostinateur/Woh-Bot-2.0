@@ -5,14 +5,12 @@ import util
 
 
 class SpecialReactions:
-    woh_emojis = ["woh", "wohpride", "wohpride2", "owoh", "awoh", "wah", "gaoh"]
+    woh_emojis = ["woh", "gaywoh1", "gaywoh2", "owoh", "awoh", "wah", "gaoh", "festivewoh", "spookywoh"]
     sans_note_emojis = ["sansD3", "sansD3_2", "sansD4", "sansA3"]
 
     def __init__(self, client):
         super(SpecialReactions).__init__()
         self.parent_client = client
-
-        self.enabled = True
 
     @staticmethod
     def get_random_emoji(emoji_list):
@@ -33,9 +31,6 @@ class SpecialReactions:
             print("Emoji '{}' doesn't exist.".format(emoji_name))
 
     async def check_message(self, message: discord.Message):
-        if not self.enabled:
-            return
-
         if 'woh' in message.content.lower():
             await self.react(message, self.get_random_emoji(self.woh_emojis))
 

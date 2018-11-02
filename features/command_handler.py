@@ -1,10 +1,14 @@
 import discord
 
+import wohbot2
+from commands.cant_be_disabled import disable, enable, help
 from commands import set_presence
 
 
 class CommandHandler(object):
-    def __init__(self, client):
+    do_not_disable = ["enable", "disable", "help"]
+
+    def __init__(self, client: wohbot2.WohBot):
         self.parent_client = client
 
         self.commands = self.get_commands()
@@ -21,7 +25,7 @@ class CommandHandler(object):
         return None
 
     def get_commands(self):
-        return [set_presence.SetPresence(self.parent_client)]
+        return [set_presence.SetPresence(self), disable.Disable(self), enable.Enable(self), help.Help(self)]
 
     async def check_message(self, message: discord.Message):
         for cmd in self.commands:
@@ -33,13 +37,19 @@ class CommandHandler(object):
     def enable_command(self, command_name):
         try:
             cmd = self.get_cmd(command_name)
+            if cmd in self.do_not_disable:
+                return "Attempted to enable an unchangeable command."
             cmd.enabled = True
+            return "Enabled '{}'".format(command_name)
         except AttributeError:
-            print("FAILED to enable command, '{}' doesn't exist.".format(command_name))
+            return "Failed to enable command, '{}' doesn't exist.".format(command_name)
 
     def disable_command(self, command_name):
         try:
             cmd = self.get_cmd(command_name)
+            if cmd in self.do_not_disable:
+                return "Attempted to disable an unchangeable command."
             cmd.enabled = False
+            return "Disabled '{}'".format(command_name)
         except AttributeError:
-            print("FAILED to enable command, '{}' doesn't exist.".format(command_name))
+            return "Failed to disable command, '{}' doesn't exist.".format(command_name)

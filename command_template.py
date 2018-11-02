@@ -1,6 +1,5 @@
 import discord
 
-import wohbot2
 import util
 
 
@@ -12,27 +11,37 @@ class Command(object):
 
     colour_royal_purple = 7885225
 
-    def __init__(self, client: wohbot2.WohBot):
-        self.parent_client = client
+    def __init__(self, handler):
+        self.handler = handler
 
         self.enabled = False
-        self.cmd_id = None
         self.perm_level = self.permission_none
         self.cmd_name = ""
         self.arguments = ""
         self.help_description = ""
 
     def __eq__(self, other):
-        return self.cmd_id == other.cmd_id
+        if type(other) is str:
+            return self.cmd_name == other
+        else:
+            return self.cmd_name == other.cmd_name
+
+    @property
+    def parent_client(self):
+        return self.handler.parent_client
 
     def get_help_embedded(self):
         title = "Command Name: {}".format(self.cmd_name)
-        description = "\nUse: {}{} {}\n\n{}".format(self.parent_client.prefix, self.cmd_name,
-                                                    self.arguments, self.help_description)
+        description = "\nPermission Level: {}\nUse: {}{} {}\n\n{}".format(self.get_permission_name(self.perm_level),
+                                                                          self.parent_client.prefix, self.cmd_name,
+                                                                          self.arguments, self.help_description)
         return discord.Embed(title=title, description=description, colour=self.colour_royal_purple)
 
     def get_help_inline(self):
-        return {"name": "{} {}".format(self.cmd_name, self.arguments), "value": self.help_description}
+
+        return {"name": "{} - {}{} {}".format(self.get_permission_name(self.perm_level), self.parent_client.prefix,
+                                              self.cmd_name, self.arguments),
+                "value": self.help_description}
 
     def get_cmd(self, message: discord.Message):
         return message.content[:len(self.parent_client.prefix + self.cmd_name)]
@@ -42,6 +51,18 @@ class Command(object):
 
     def cmd_called(self, message: discord.Message):
         return self.get_cmd(message).lower() == self.parent_client.prefix + self.cmd_name
+
+    def get_permission_name(self, perms):
+        if perms == self.permission_none:
+            return "No one"
+        elif perms == self.permission_everyone:
+            return "Everyone"
+        elif perms == self.permission_admin:
+            return "Admin"
+        elif perms == self.permission_owner:
+            return "Owner"
+        else:
+            return "Perms broken"
 
     def has_permission(self, perms, user_id, server_id):
         if perms == self.permission_none:

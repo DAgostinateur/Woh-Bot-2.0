@@ -8,7 +8,6 @@ class SetPresence(command_template.Command):
         super(SetPresence, self).__init__(client)
 
         self.enabled = True
-        self.cmd_id = 1001
         self.perm_level = self.permission_owner
         self.cmd_name = "setpresence"
         self.arguments = "(game)"

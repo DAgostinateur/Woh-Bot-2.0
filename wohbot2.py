@@ -58,9 +58,6 @@ class WohBot(discord.Client):
         await self.special_reactions.check_message(message)
         await self.command_handler.check_message(message)
 
-        if message.content.startswith(self.prefix + "helpembed"):
-            await self.send_message(message.channel, embed=self.cmd_set_presence.get_help_embedded())
-
     async def on_voice_state_update(self, before: discord.Member, after: discord.Member):
         if before.voice.voice_channel is None and after.voice.voice_channel is not None:
             try:
