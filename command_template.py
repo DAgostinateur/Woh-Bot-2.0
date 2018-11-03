@@ -60,7 +60,7 @@ class Command(object):
         elif perms == self.permission_admin:
             return "Admin"
         elif perms == self.permission_owner:
-            return "Owner"
+            return "Bot Owner"
         else:
             return "Perms broken"
 
@@ -70,7 +70,7 @@ class Command(object):
         elif perms == self.permission_everyone:
             return True
         elif perms == self.permission_admin:
-            return self.parent_client.admin_handler.is_user_admin(user_id, server_id)
+            return self.parent_client.admin_handler.is_user_admin(user_id, server_id) or util.is_owner(user_id)
         elif perms == self.permission_owner:
             return util.is_owner(user_id)
         return False

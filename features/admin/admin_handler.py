@@ -57,16 +57,16 @@ class AdminHandler(object):
 
             return user_admin_list
 
-    def save_channel_birthday(self, user_id, server_id):
+    def save_user_admin(self, user_id, server_id):
         self.user_admins.append(user_admin.UserAdmin(user_id, server_id))
 
         self._write_to_admin_file()
 
-    def remove_channel_birthday(self, user_id, server_id):
+    def remove_user_admin(self, user_id, server_id):
         try:
             self.user_admins.remove(self.get_user_admin(user_id, server_id))
-            print("FAILED to remove user admin.")
         except ValueError:
+            print("FAILED to remove user admin.")
             return
 
         self._write_to_admin_file()

@@ -2,7 +2,7 @@ import discord
 
 import wohbot2
 from commands.cant_be_disabled import disable, enable, help
-from commands import set_presence
+from commands import set_presence, set_channel_bd, show_channel_bd
 
 
 class CommandHandler(object):
@@ -25,7 +25,8 @@ class CommandHandler(object):
         return None
 
     def get_commands(self):
-        return [set_presence.SetPresence(self), disable.Disable(self), enable.Enable(self), help.Help(self)]
+        return [set_presence.SetPresence(self), disable.Disable(self), enable.Enable(self), help.Help(self),
+                set_channel_bd.SetChannelBD(self), show_channel_bd.ShowChannelBD(self)]
 
     async def check_message(self, message: discord.Message):
         for cmd in self.commands:

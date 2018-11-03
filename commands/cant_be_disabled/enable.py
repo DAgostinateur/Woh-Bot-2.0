@@ -18,4 +18,8 @@ class Enable(command_template.Command):
             return
 
         text_result = self.handler.enable_command(self.rm_cmd(message))
-        await self.parent_client.send_message(message.channel, text_result)
+        try:
+            await self.parent_client.send_message(message.channel, text_result)
+        except discord.Forbidden:
+            print("Client doesn't have permission to send a message in '{}'.".format(message.channel.id))
+

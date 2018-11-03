@@ -153,8 +153,8 @@ class BirthdayHandler(object):
     def remove_channel_birthday(self, server_id):
         try:
             self.channel_birthdays.remove(self.get_channel_bd(server_id))
-            print("FAILED to remove channel birthday.")
         except ValueError:
+            print("FAILED to remove channel birthday.")
             return
 
         self._write_to_channel_file()

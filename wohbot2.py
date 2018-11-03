@@ -61,15 +61,15 @@ class WohBot(discord.Client):
     async def on_voice_state_update(self, before: discord.Member, after: discord.Member):
         if before.voice.voice_channel is None and after.voice.voice_channel is not None:
             try:
-                print("User Joined VC at {}: {}".format(str(datetime.now().time())[:8], after.name))
+                print("User Joined VC at {} - {}".format(str(datetime.now().time())[:8], after.name))
             except UnicodeEncodeError:
-                print("User Joined VC at {}: {}".format(str(datetime.now().time())[:8], after.id))
+                print("User Joined VC at {} - {}".format(str(datetime.now().time())[:8], after.id))
 
         if before.voice.voice_channel is not None and after.voice.voice_channel is None:
             try:
-                print("User Left VC at {}: {}".format(str(datetime.now().time())[:8], after.name))
+                print("User Left VC at {} - {}".format(str(datetime.now().time())[:8], after.name))
             except UnicodeEncodeError:
-                print("User Left VC at {}: {}".format(str(datetime.now().time())[:8], after.id))
+                print("User Left VC at {} - {}".format(str(datetime.now().time())[:8], after.id))
 
     async def on_reaction_add(self, reaction, user):
         if user == self.user:

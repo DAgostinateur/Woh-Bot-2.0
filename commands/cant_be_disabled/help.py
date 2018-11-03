@@ -1,5 +1,6 @@
 import discord
 
+import util
 import command_template
 
 
@@ -17,18 +18,22 @@ class Help(command_template.Command):
                                 "This command can not be disabled."
 
     def get_full_embeds(self):
+        embeds = []
+
         title = "Commands:"
         description = "Prefix: {}\n'()' means optional,\n'[]' means required".format(self.parent_client.prefix)
+
         fields = self.handler.get_embed_inlines()
 
-        embed = discord.Embed(title=title, description=description, colour=self.colour_royal_purple)
-        embed.set_author(name="Help", icon_url="https://cdn.discordapp.com/emojis/492159765745500160.png?v=1")
-        # embeds = []
-        for field in fields:
-            embed.add_field(name=field["name"], value=field["value"])
-            # if len(embed.fields) >= 25:
+        for fields in util.split_list(fields, 25):
+            embed = discord.Embed(title=title, description=description, colour=self.colour_royal_purple)
+            embed.set_author(name="Help", icon_url="https://cdn.discordapp.com/emojis/492159765745500160.png?v=1")
+            for field in fields:
+                embed.add_field(name=field["name"], value=field["value"])
 
-        return embed
+            embeds.append(embed)
+
+        return embeds
 
     def get_cmd_embed(self):
         title = "Command Name: {}".format(self.cmd_name)
@@ -41,7 +46,11 @@ class Help(command_template.Command):
             return
 
         command = self.handler.get_cmd(self.rm_cmd(message))
-        if command is None:
-            await self.parent_client.send_message(message.channel, embed=self.get_full_embeds())
-        else:
-            await self.parent_client.send_message(message.channel, embed=command.get_help_embedded())
+        try:
+            if command is None:
+                for embed in self.get_full_embeds():
+                    await self.parent_client.send_message(message.channel, embed=embed)
+            else:
+                await self.parent_client.send_message(message.channel, embed=command.get_help_embedded())
+        except discord.Forbidden:
+            print("Client doesn't have permission to send a message in '{}'.".format(message.channel.id))

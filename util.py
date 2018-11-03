@@ -39,6 +39,11 @@ def get_next_day_delta(hour: int):
     return int((today_t - today_n).seconds + 1)
 
 
+def split_list(l, n):
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
+
+
 def is_owner(user_id: str):
     return user_id == hidden.owner_id()
 
