@@ -112,7 +112,7 @@ class BirthdayHandler(object):
 
     def save_user_birthday(self, user_id, birthday_date, server_id):
         self.user_birthdays.append(user_birthday.UserBirthday(user_id, birthday_date, server_id))
-
+        print("SUCCEEDED to add user birthday.")
         self._write_to_user_file()
 
     def remove_user_birthday(self, user_id, server_id):
@@ -147,7 +147,7 @@ class BirthdayHandler(object):
 
     def save_channel_birthday(self, channel_id, server_id):
         self.channel_birthdays.append(channel_birthday.ChannelBirthday(channel_id, server_id))
-
+        print("SUCCEEDED to add channel birthday.")
         self._write_to_channel_file()
 
     def remove_channel_birthday(self, server_id):

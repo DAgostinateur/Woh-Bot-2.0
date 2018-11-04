@@ -27,6 +27,6 @@ class SetPresence(command_template.Command):
 
         game_name = self.rm_cmd(message)
         if len(game_name) != 0:
-            await self.change_presence(message, game_name, "Changed presence!")
+            await self.change_presence(message, game_name, "Changed presence.")
         else:
-            await self.change_presence(message, self.parent_client.default_presence, "Presence back to default!")
+            await self.change_presence(message, self.parent_client.default_presence, "Presence back to default.")

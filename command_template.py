@@ -10,6 +10,7 @@ class Command(object):
     permission_owner = 3  # Command access: Me
 
     colour_royal_purple = 7885225
+    colour_birthday = 16428082
 
     def __init__(self, handler):
         self.handler = handler
@@ -38,7 +39,6 @@ class Command(object):
         return discord.Embed(title=title, description=description, colour=self.colour_royal_purple)
 
     def get_help_inline(self):
-
         return {"name": "{} - {}{} {}".format(self.get_permission_name(self.perm_level), self.parent_client.prefix,
                                               self.cmd_name, self.arguments),
                 "value": self.help_description}
@@ -86,3 +86,9 @@ class Command(object):
             return False
 
         return True
+
+    async def send_message_check_forbidden(self, message, text):
+        try:
+            await self.parent_client.send_message(message.channel, text)
+        except discord.Forbidden:
+            print("Client doesn't have permission to send a message in '{}'.".format(message.channel.id))

@@ -39,6 +39,16 @@ def get_next_day_delta(hour: int):
     return int((today_t - today_n).seconds + 1)
 
 
+def is_int(text):
+    try:
+        int(text)
+        return True
+    except ValueError:
+        return False
+    except TypeError:
+        return False
+
+
 def split_list(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]

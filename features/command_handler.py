@@ -1,8 +1,9 @@
 import discord
 
 import wohbot2
+from commands import set_presence
 from commands.cant_be_disabled import disable, enable, help
-from commands import set_presence, set_channel_bd, show_channel_bd
+from commands.birthday import set_channel_bd, show_channel_bd, set_user_bd, set_notif_time, list_user_bd
 
 
 class CommandHandler(object):
@@ -25,14 +26,16 @@ class CommandHandler(object):
         return None
 
     def get_commands(self):
-        return [set_presence.SetPresence(self), disable.Disable(self), enable.Enable(self), help.Help(self),
-                set_channel_bd.SetChannelBD(self), show_channel_bd.ShowChannelBD(self)]
+        return [set_presence.SetPresence(self), disable.Disable(self), enable.Enable(self),
+                set_notif_time.SetNotifTime(self), set_channel_bd.SetChannelBD(self),
+                show_channel_bd.ShowChannelBD(self), list_user_bd.ListUserBD(self), set_user_bd.SetUserBD(self),
+                help.Help(self)]
 
     async def check_message(self, message: discord.Message):
         for cmd in self.commands:
             await cmd.command(message)
 
-    def get_embed_inlines(self):
+    def get_cmd_inlines(self):
         return [cmd.get_help_inline() for cmd in self.commands]
 
     def enable_command(self, command_name):

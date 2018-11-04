@@ -4,7 +4,7 @@ import json
 
 # noinspection PyArgumentList
 class Settings(object):
-    default_bot_settings_file = "./settings.json"
+    default_bot_settings_file = "data/settings.json"
     default_bot_notification_time = 11  # hour of the day i.e 11am
 
     json_notification_time = "default_notification_time"

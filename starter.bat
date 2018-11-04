@@ -1,2 +1,4 @@
+:start
+pushd %~dp0
 python wohbot2.py
-PAUSE
+GOTO start

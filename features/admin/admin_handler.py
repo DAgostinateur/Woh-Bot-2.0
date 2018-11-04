@@ -59,7 +59,7 @@ class AdminHandler(object):
 
     def save_user_admin(self, user_id, server_id):
         self.user_admins.append(user_admin.UserAdmin(user_id, server_id))
-
+        print("SUCCEEDED to add user admin.")
         self._write_to_admin_file()
 
     def remove_user_admin(self, user_id, server_id):

@@ -11,8 +11,11 @@ import util
 
 
 # TODO:
-#
-#
+# Set different prefixes for servers.
+# AddUserAdmin, RmUserAdmin and ListUserAdmin commands.
+# Save disabled commands.
+# Proper Logging.
+# Control Terraria Server, basically finish what I started with the first bot.
 #
 
 
@@ -24,7 +27,7 @@ class WohBot(discord.Client):
 
         util.check_folder(self.data_folder)
 
-        self.prefix = "!!!"
+        self.prefix = "w!"
         self.default_presence = "Prefix: " + self.prefix
         self.owner = None
         self.settings = settings.Settings()
@@ -49,6 +52,7 @@ class WohBot(discord.Client):
         print("-------")
         print("Logged in as {}".format(self.user))
         print("Creator: {}".format(self.owner.name))
+        print("Prefix: {}".format(self.prefix))
         print("-------\n")
 
     async def on_message(self, message: discord.Message):

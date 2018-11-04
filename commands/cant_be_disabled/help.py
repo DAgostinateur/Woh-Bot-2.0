@@ -17,17 +17,17 @@ class Help(command_template.Command):
         self.help_description = "Shows every available command and their description, can specify a command. " \
                                 "This command can not be disabled."
 
-    def get_full_embeds(self):
+    def get_full_cmd_embeds(self):
         embeds = []
 
         title = "Commands:"
         description = "Prefix: {}\n'()' means optional,\n'[]' means required".format(self.parent_client.prefix)
 
-        fields = self.handler.get_embed_inlines()
-
-        for fields in util.split_list(fields, 25):
+        for fields in util.split_list(self.handler.get_cmd_inlines(), 25):
             embed = discord.Embed(title=title, description=description, colour=self.colour_royal_purple)
-            embed.set_author(name="Help", icon_url="https://cdn.discordapp.com/emojis/492159765745500160.png?v=1")
+            embed.set_author(name="Help",
+                             icon_url="https://emojipedia-us.s3.dualstack.us-west-1."
+                                      "amazonaws.com/thumbs/120/twitter/154/white-question-mark-ornament_2754.png")
             for field in fields:
                 embed.add_field(name=field["name"], value=field["value"])
 
@@ -48,7 +48,7 @@ class Help(command_template.Command):
         command = self.handler.get_cmd(self.rm_cmd(message))
         try:
             if command is None:
-                for embed in self.get_full_embeds():
+                for embed in self.get_full_cmd_embeds():
                     await self.parent_client.send_message(message.channel, embed=embed)
             else:
                 await self.parent_client.send_message(message.channel, embed=command.get_help_embedded())

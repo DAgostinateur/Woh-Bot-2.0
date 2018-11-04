@@ -18,7 +18,4 @@ class Disable(command_template.Command):
             return
 
         text_result = self.handler.disable_command(self.rm_cmd(message))
-        try:
-            await self.parent_client.send_message(message.channel, text_result)
-        except discord.Forbidden:
-            print("Client doesn't have permission to send a message in '{}'.".format(message.channel.id))
+        await self.send_message_check_forbidden(message, text_result)
