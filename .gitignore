@@ -8,3 +8,4 @@ hidden.py
 *.json
 .idea/inspectionProfiles/Project_Default.xml
 *.xml
+*.lnk

@@ -30,19 +30,21 @@ class SetUserBD(command_template.Command):
         mm_dd = self.rm_cmd(message)
         if len(mm_dd) != 0:
             if not self.validate_date(mm_dd):
-                try:
-                    await self.parent_client.send_message(message.channel, "Invalid date.")
-                except discord.Forbidden:
-                    print("Client doesn't have permission to send a message in '{}'.".format(message.channel.id))
+                self.send_message_check_forbidden(message, "Invalid date.")
             else:
+                if self.parent_client.birthday_handler.get_user_bd(message.author.id, message.server.id) is not None:
+                    self.parent_client.birthday_handler.remove_user_birthday(message.author.id, message.server.id)
+
                 self.parent_client.birthday_handler.save_user_birthday(message.author.id, mm_dd, message.server.id)
                 user_bd = self.parent_client.birthday_handler.get_user_bd(message.author.id, message.server.id)
-                try:
-                    await self.parent_client.send_message(message.channel,
-                                                          "Your birthday has been set for {} {}.".format(
-                                                              user_bd.get_readable_month(), user_bd.get_readable_day()))
-                except discord.Forbidden:
-                    print("Client doesn't have permission to send a message in '{}'.".format(message.channel.id))
+
+                await self.send_message_check_forbidden(message, "Your birthday has been set for {} {}.".format(
+                    user_bd.get_readable_month(), user_bd.get_readable_day()))
+
         else:
-            self.parent_client.birthday_handler.remove_user_birthday(message.author.id, message.server.id)
-            await self.send_message_check_forbidden(message, "Your birthday was removed.")
+            if self.parent_client.birthday_handler.get_user_bd(message.author.id, message.server.id) is not None:
+                self.parent_client.birthday_handler.remove_user_birthday(message.author.id, message.server.id)
+                await self.send_message_check_forbidden(message, "Your birthday was removed.")
+            else:
+                await self.send_message_check_forbidden(message,
+                                                        "Your birthday wasn't removed because it's not in the list.")

@@ -1,4 +1,5 @@
 import calendar
+import datetime
 
 
 class UserBirthday:
@@ -9,6 +10,13 @@ class UserBirthday:
 
     def __eq__(self, other):
         return self.user_id == other.user_id and other.server_id == self.server_id
+
+    def get_datetime_date(self):
+        if datetime.date(datetime.datetime.now().year, self.get_month_number(),
+                         self.get_day_number()) < datetime.date.today():
+            return datetime.date(datetime.datetime.now().year + 1, self.get_month_number(), self.get_day_number())
+        else:
+            return datetime.date(datetime.datetime.now().year, self.get_month_number(), self.get_day_number())
 
     def get_month_number(self):
         return int(self.birthday_date[0:2])

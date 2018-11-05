@@ -20,6 +20,8 @@ class BirthdayHandler(object):
     def __init__(self, client):
         self.parent_client = client
 
+        self.first_boot = True
+
         self.user_birthdays = self.get_user_birthdays()
         self.channel_birthdays = self.get_channel_birthdays()
 
@@ -39,7 +41,8 @@ class BirthdayHandler(object):
             file.write(json_string)
 
     async def send_birthday_message(self, channel_id, user_id):
-        message = "Happy Birthday {0}".format(self.parent_client.get_user_info(user_id).mention)
+        user = await self.parent_client.get_user_info(user_id)
+        message = "Happy Birthday {0}".format(user.mention)
         try:
             await self.parent_client.send_message(self.parent_client.get_channel(channel_id), message)
         except discord.NotFound:
@@ -51,8 +54,11 @@ class BirthdayHandler(object):
         await self.parent_client.wait_until_ready()
 
         while not self.parent_client.is_closed:
-            mm_dd = str(datetime.datetime.today())[5:]
+            mm_dd = str(datetime.datetime.today())[5:10]
             for channel_bd in self.channel_birthdays:
+                if self.first_boot:
+                    self.first_boot = False
+                    break
                 server = self.parent_client.get_server(channel_bd.server_id)
                 if server is None:
                     continue
@@ -66,6 +72,17 @@ class BirthdayHandler(object):
 
             print(str(datetime.datetime.today()))
             await asyncio.sleep(util.get_next_day_delta(self.parent_client.settings.get_default_notification_time()))
+
+    def check_birthday_lists(self):
+        for channel_bd in self.channel_birthdays:
+            server = self.parent_client.get_server(channel_bd.server_id)
+            if server is None:
+                self.remove_channel_birthday(channel_bd.server_id)
+            else:
+                for user_bd in self.user_birthdays:
+                    member = server.get_member(user_bd.user_id)
+                    if member is None and user_bd.server_id == server.id:
+                        self.remove_user_birthday(user_bd.user_id, user_bd.server_id)
 
     def get_user_bd(self, user_id, server_id):
         """Returns a UserBirthday with a user id and a server id
@@ -122,7 +139,7 @@ class BirthdayHandler(object):
             print("FAILED to remove user birthday.")
             return
 
-        self._write_to_channel_file()
+        self._write_to_user_file()
 
         print("SUCCEEDED to remove user birthday.")
 

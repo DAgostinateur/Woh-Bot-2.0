@@ -11,8 +11,9 @@ import util
 
 
 # TODO:
-# Set different prefixes for servers.
+# When the notification time changes, change the delta time.
 # AddUserAdmin, RmUserAdmin and ListUserAdmin commands.
+# Set different prefixes for servers.
 # Save disabled commands.
 # Proper Logging.
 # Control Terraria Server, basically finish what I started with the first bot.
@@ -44,6 +45,8 @@ class WohBot(discord.Client):
         self.owner = app_info.owner
 
     async def on_ready(self):
+        self.birthday_handler.check_birthday_lists()
+
         await client.change_presence(game=discord.Game(name=self.default_presence, type=0))
         await self._get_client_owner()
 
