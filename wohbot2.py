@@ -83,8 +83,9 @@ class WohBot(discord.Client):
             return
 
         # if reaction.emoji == util.get_custom_emoji(list(self.get_all_emojis()), 'woh'):
-        if reaction.emoji.name == 'woh':
-            await self.add_reaction(reaction.message, reaction.emoji)
+        if type(reaction.emoji) is discord.Emoji:
+            if reaction.emoji.name == 'woh':
+                await self.add_reaction(reaction.message, reaction.emoji)
 
 
 if __name__ == '__main__':
