@@ -12,7 +12,7 @@ class SetUserBD(command_template.Command):
         self.perm_level = self.permission_everyone
         self.cmd_name = "setuserbd"
         self.arguments = "(MM-DD)"
-        self.help_description = "Sets the birthday of the user. It will ping them on their birthday this server. " \
+        self.help_description = "Sets the birthday of the user. It will ping them on their birthday in this server. " \
                                 "Putting nothing in (MM-DD) removes it."
 
     @staticmethod

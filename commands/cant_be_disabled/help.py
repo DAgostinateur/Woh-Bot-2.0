@@ -21,7 +21,8 @@ class Help(command_template.Command):
         embeds = []
 
         title = "Commands:"
-        description = "Prefix: {}\n'()' means optional,\n'[]' means required".format(self.parent_client.prefix)
+        description = "Prefix: {}\n'()' means optional,\n'(-letter)' means optional option," \
+                      "\n'[]' means required".format(self.parent_client.prefix)
 
         for fields in util.split_list(self.handler.get_cmd_inlines(), 25):
             embed = discord.Embed(title=title, description=description, colour=self.colour_royal_purple)

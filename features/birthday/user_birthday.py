@@ -18,6 +18,9 @@ class UserBirthday:
         else:
             return datetime.date(datetime.datetime.now().year, self.get_month_number(), self.get_day_number())
 
+    def get_datetime_date_no_adjustment(self):
+        return datetime.date(datetime.datetime.now().year, self.get_month_number(), self.get_day_number())
+
     def get_month_number(self):
         return int(self.birthday_date[0:2])
 

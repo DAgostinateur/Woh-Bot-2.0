@@ -11,13 +11,11 @@ import util
 
 
 # TODO:
-# When the notification time changes, change the delta time.
 # AddUserAdmin, RmUserAdmin and ListUserAdmin commands.
 # Set different prefixes for servers.
 # Save disabled commands.
 # Proper Logging.
 # Control Terraria Server, basically finish what I started with the first bot.
-#
 
 
 class WohBot(discord.Client):
@@ -62,8 +60,9 @@ class WohBot(discord.Client):
         if message.author == self.user:
             return
 
-        await self.special_reactions.check_message(message)
-        await self.command_handler.check_message(message)
+        if not message.channel.is_private:
+            await self.special_reactions.check_message(message)
+            await self.command_handler.check_message(message)
 
     async def on_voice_state_update(self, before: discord.Member, after: discord.Member):
         if before.voice.voice_channel is None and after.voice.voice_channel is not None:
