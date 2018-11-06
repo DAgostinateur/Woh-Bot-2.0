@@ -11,12 +11,56 @@ class UserBirthday:
     def __eq__(self, other):
         return self.user_id == other.user_id and other.server_id == self.server_id
 
-    def get_datetime_date(self):
-        if datetime.date(datetime.datetime.now().year, self.get_month_number(),
-                         self.get_day_number()) < datetime.date.today():
-            return datetime.date(datetime.datetime.now().year + 1, self.get_month_number(), self.get_day_number())
+    @property
+    def current_year(self):
+        return datetime.datetime.now().year
+
+    def get_astrological_sign(self):
+        # Requested by Waffle.
+        if datetime.date(self.current_year, 3, 21) <= self.get_datetime_date_no_adjustment() <= datetime.date(
+                self.current_year, 4, 19):
+            return "Aries ♈"
+        elif datetime.date(self.current_year, 4, 20) <= self.get_datetime_date_no_adjustment() <= datetime.date(
+                self.current_year, 5, 20):
+            return "Taurus ♉"
+        elif datetime.date(self.current_year, 5, 21) <= self.get_datetime_date_no_adjustment() <= datetime.date(
+                self.current_year, 6, 20):
+            return "Gemini ♊"
+        elif datetime.date(self.current_year, 6, 21) <= self.get_datetime_date_no_adjustment() <= datetime.date(
+                self.current_year, 7, 22):
+            return "Cancer ♋"
+        elif datetime.date(self.current_year, 7, 23) <= self.get_datetime_date_no_adjustment() <= datetime.date(
+                self.current_year, 8, 22):
+            return "Leo ♌"
+        elif datetime.date(self.current_year, 8, 23) <= self.get_datetime_date_no_adjustment() <= datetime.date(
+                self.current_year, 9, 22):
+            return "Virgo ♍"
+        elif datetime.date(self.current_year, 9, 23) <= self.get_datetime_date_no_adjustment() <= datetime.date(
+                self.current_year, 10, 22):
+            return "Libra ♎"
+        elif datetime.date(self.current_year, 10, 23) <= self.get_datetime_date_no_adjustment() <= datetime.date(
+                self.current_year, 11, 21):
+            return "Scorpio ♏"
+        elif datetime.date(self.current_year, 11, 22) <= self.get_datetime_date_no_adjustment() <= datetime.date(
+                self.current_year, 12, 21):
+            return "Sagittarius ♐"
+        elif datetime.date(self.current_year, 12, 22) <= self.get_datetime_date() <= datetime.date(
+                self.current_year + 1, 1, 19):  # Needs to use next year or it will return False
+            return "Capricorn ♑"
+        elif datetime.date(self.current_year, 1, 20) <= self.get_datetime_date_no_adjustment() <= datetime.date(
+                self.current_year, 2, 18):
+            return "Aquarius ♒"
+        elif datetime.date(self.current_year, 2, 19) <= self.get_datetime_date_no_adjustment() <= datetime.date(
+                self.current_year, 3, 20):
+            return "Pisces ♓"
         else:
-            return datetime.date(datetime.datetime.now().year, self.get_month_number(), self.get_day_number())
+            return "Astrological sign broken?"
+
+    def get_datetime_date(self):
+        if datetime.date(self.current_year, self.get_month_number(), self.get_day_number()) < datetime.date.today():
+            return datetime.date(self.current_year + 1, self.get_month_number(), self.get_day_number())
+        else:
+            return datetime.date(self.current_year, self.get_month_number(), self.get_day_number())
 
     def get_datetime_date_no_adjustment(self):
         return datetime.date(datetime.datetime.now().year, self.get_month_number(), self.get_day_number())
