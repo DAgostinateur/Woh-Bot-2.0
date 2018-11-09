@@ -11,7 +11,6 @@ class ShowChannelBD(command_template.Command):
         self.enabled = True
         self.perm_level = self.permission_admin
         self.cmd_name = "showchannelbd"
-        self.arguments = ""
         self.help_description = "Shows the channel used for birthday messages."
 
     async def command(self, message: discord.Message):

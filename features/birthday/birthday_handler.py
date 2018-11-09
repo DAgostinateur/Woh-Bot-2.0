@@ -84,6 +84,13 @@ class BirthdayHandler(object):
                     if member is None and user_bd.server_id == server.id:
                         self.remove_user_birthday(user_bd.user_id, user_bd.server_id)
 
+    def get_birthday_count(self, message):
+        count = 0
+        for user_bd in self.user_birthdays:
+            if user_bd.server_id == message.server.id and message.server.get_member(user_bd.user_id) is not None:
+                count += 1
+        return count
+
     def get_user_bd(self, user_id, server_id):
         """Returns a UserBirthday with a user id and a server id
 

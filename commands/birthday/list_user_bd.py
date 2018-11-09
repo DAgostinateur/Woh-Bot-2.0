@@ -12,10 +12,11 @@ class ListUserBD(command_template.Command):
         self.enabled = True
         self.perm_level = self.permission_everyone
         self.cmd_name = "listuserbd"
-        self.arguments = "(-d/a/c)"
+        self.arguments = "(-a/c/d)"
+        self.option_letters = "acd"
         self.help_description = "Lists the birthdays of everyone in this server by closest by default. " \
-                                "Adding '-d' sorts by date instead. Adding '-a' also displays astrological sign. " \
-                                "'c' will display the birthday count. Option 'ad' can be combined"
+                                "'-d' sorts by date instead. '-a' displays astrological sign. " \
+                                "'c' will display the birthday count. Option 'acd' can be combined."
 
     @staticmethod
     def sort_by_closest(bd_list: list):
@@ -26,80 +27,82 @@ class ListUserBD(command_template.Command):
     def sort_by_date(bd_list: list):
         return sorted(bd_list, key=lambda s: s.get_datetime_date_no_adjustment())
 
-    def get_birthday_count(self, message):
-        count = 0
-        for user_bd in self.parent_client.birthday_handler.user_birthdays:
-            if user_bd.server_id == message.server.id and message.server.get_member(user_bd.user_id) is not None:
-                count += 1
-        return count
+    @staticmethod
+    def make_field(member, value):
+        return {"name": member.name, "inline": "true",
+                "value": value}
 
-    def get_birthday_inlines(self, message: discord.Message, sort_method):
-        inlines = []
-        for user_bd in sort_method(self.parent_client.birthday_handler.user_birthdays):
-            member = message.server.get_member(user_bd.user_id)
-            if user_bd.server_id == message.server.id and member is not None:
-                if "-da" in message.content or "-ad" in message.content or "-a" in message.content:
-                    inlines.append({"name": member.name, "inline": "true",
-                                    "value": "{} {}  - {}".format(user_bd.get_readable_month(),
-                                                                  user_bd.get_readable_day(),
-                                                                  user_bd.get_astrological_sign())})
-                else:
-                    inlines.append({"name": member.name, "inline": "true",
-                                    "value": "{} {}".format(user_bd.get_readable_month(), user_bd.get_readable_day())})
-        return inlines
-
-    def get_full_birthday_embeds(self, message: discord.Message, sort_method):
-        embeds = []
-
-        if len(self.get_birthday_inlines(message, sort_method)) == 0:
-            embed = discord.Embed(colour=self.colour_birthday, description="No one in the list!")
-            embed.set_author(name="Birthday List",
-                             icon_url="https://emojipedia-us.s3.dualstack.us-west-1."
-                                      "amazonaws.com/thumbs/120/twitter/154/confetti-ball_1f38a.png")
-            embeds.append(embed)
-
-        for fields in util.split_list(self.get_birthday_inlines(message, sort_method), 25):
-            embed = discord.Embed(colour=self.colour_birthday)
-            embed.set_author(name="Birthday List",
-                             icon_url="https://emojipedia-us.s3.dualstack.us-west-1."
-                                      "amazonaws.com/thumbs/120/twitter/154/confetti-ball_1f38a.png")
-            for field in fields:
-                embed.add_field(name=field["name"], value=field["value"])
-
-            embeds.append(embed)
-
-        return embeds
-
-    def get_birthday_count_embed(self, message):
-        embed = discord.Embed(colour=self.colour_birthday,
-                              description="There's {} members in the birthday list in this server".format(
-                                  self.get_birthday_count(message)))
+    def make_embed(self, description, fields):
+        embed = discord.Embed(colour=self.colour_birthday, description=description)
         embed.set_author(name="Birthday List",
                          icon_url="https://emojipedia-us.s3.dualstack.us-west-1."
                                   "amazonaws.com/thumbs/120/twitter/154/confetti-ball_1f38a.png")
+
+        if fields is not None:
+            for field in fields:
+                embed.add_field(name=field["name"], value=field["value"])
+
         return embed
+
+    def get_count_description(self, message):
+        return "There's {} members in the birthday list in this server".format(
+            self.parent_client.birthday_handler.get_birthday_count(message))
+
+    def add_astrological_signs(self, member, user_bd):
+        return self.make_field(member, "{} {}  - {}".format(user_bd.get_readable_month(),
+                                                            user_bd.get_readable_day(),
+                                                            user_bd.get_astrological_sign()))
+
+    def get_birthday_inlines(self, message: discord.Message):
+        inlines = []
+        sorted_bd_list = []
+
+        if self.has_wanted_argument(message, "d"):
+            for user_bd in self.sort_by_date(self.parent_client.birthday_handler.user_birthdays):
+                sorted_bd_list.append(user_bd)
+        else:
+            for user_bd in self.sort_by_closest(self.parent_client.birthday_handler.user_birthdays):
+                sorted_bd_list.append(user_bd)
+
+        if self.has_wanted_argument(message, "a"):
+            for user_bd in sorted_bd_list:
+                member = message.server.get_member(user_bd.user_id)
+                if user_bd.server_id == message.server.id and member is not None:
+                    inlines.append(self.add_astrological_signs(member, user_bd))
+        else:
+            for user_bd in sorted_bd_list:
+                member = message.server.get_member(user_bd.user_id)
+                if user_bd.server_id == message.server.id and member is not None:
+                    inlines.append(self.make_field(member, "{} {}".format(user_bd.get_readable_month(),
+                                                                          user_bd.get_readable_day())))
+
+        return inlines
+
+    async def get_full_birthday_embeds(self, message: discord.Message):
+        embeds = []
+        description = ""
+
+        if self.check_argument_options(message) is None:
+            await self.send_message_check_forbidden(message, "Invalid arguments.")
+            return embeds
+
+        if len(self.get_birthday_inlines(message)) == 0:
+            return self.make_embed("No one in the list!", None)
+
+        if self.has_wanted_argument(message, "c"):
+            description = self.get_count_description(message)
+
+        for fields in util.split_list(self.get_birthday_inlines(message), 25):
+            embeds.append(self.make_embed(description, fields))
+
+        return embeds
 
     async def command(self, message: discord.Message):
         if not self.execute_cmd(message):
             return
 
-        if '-c' in message.content:
-            try:
-                await self.parent_client.send_message(message.channel, embed=self.get_birthday_count_embed(message))
-            except discord.Forbidden:
-                print("Client doesn't have permission to send a message in '{}'.".format(message.channel.id))
-
-            return
-
-        if '-d' in message.content:
-            try:
-                for embed in self.get_full_birthday_embeds(message, self.sort_by_date):
-                    await self.parent_client.send_message(message.channel, embed=embed)
-            except discord.Forbidden:
-                print("Client doesn't have permission to send a message in '{}'.".format(message.channel.id))
-        else:
-            try:
-                for embed in self.get_full_birthday_embeds(message, self.sort_by_closest):
-                    await self.parent_client.send_message(message.channel, embed=embed)
-            except discord.Forbidden:
-                print("Client doesn't have permission to send a message in '{}'.".format(message.channel.id))
+        try:
+            for embed in await self.get_full_birthday_embeds(message):
+                await self.parent_client.send_message(message.channel, embed=embed)
+        except discord.Forbidden:
+            print("Client doesn't have permission to send a message in '{}'.".format(message.channel.id))

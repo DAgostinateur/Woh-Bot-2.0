@@ -1,4 +1,5 @@
 import discord
+import re
 
 import util
 
@@ -19,6 +20,7 @@ class Command(object):
         self.perm_level = self.permission_none
         self.cmd_name = ""
         self.arguments = ""
+        self.option_letters = ""  # Example: w!listuserbd -da
         self.help_description = ""
 
     def __eq__(self, other):
@@ -74,6 +76,28 @@ class Command(object):
         elif perms == self.permission_owner:
             return util.is_owner(user_id)
         return False
+
+    def has_wanted_argument(self, message, wanted_letters: str):
+        # wanted_letters can't be empty
+        argument = self.check_argument_options(message)
+        if argument is None:
+            return False
+
+        true_counter = len(wanted_letters)
+        for arg_letter in argument[1:]:
+            if arg_letter in wanted_letters:
+                true_counter -= 1
+
+        return true_counter == 0
+
+    def check_argument_options(self, message: discord.Message):
+        if len(self.option_letters) != 0:
+            pattern = r"-[" + self.option_letters + r"]{,3}$"
+            regex = re.compile(pattern)
+            argument = regex.search(self.rm_cmd(message))
+            if argument is not None:
+                return argument.group()
+        return None
 
     def execute_cmd(self, message: discord.Message):
         if not self.enabled:
