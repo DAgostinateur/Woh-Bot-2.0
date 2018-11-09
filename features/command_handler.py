@@ -9,10 +9,43 @@ from commands.birthday import set_channel_bd, show_channel_bd, set_user_bd, set_
 class CommandHandler(object):
     do_not_disable = ["enable", "disable", "help"]
 
+    dict_cmd_name = "cmd_name"
+    dict_enabled = "enabled"
+
     def __init__(self, client: wohbot2.WohBot):
         self.parent_client = client
 
         self.commands = self.get_commands()
+        self.set_every_command_state()
+
+    def set_every_command_state(self):
+        if self.parent_client.settings.user_command_states is None:
+            return
+
+        for cmd in self.commands:
+            if self.command_state_exists(cmd.cmd_name):
+                cmd.enabled = self.get_command_enabled(cmd.cmd_name)
+
+    def get_command_enabled(self, cmd_name):
+        if self.parent_client.settings.user_command_states is None:
+            return None
+
+        for cmd_state in self.parent_client.settings.user_command_states:
+            if cmd_state[self.dict_cmd_name] == cmd_name:
+                if cmd_state[self.dict_enabled] == "True":
+                    return True
+                else:
+                    return False
+        return None
+
+    def command_state_exists(self, cmd_name):
+        if self.parent_client.settings.user_command_states is None:
+            return False
+
+        for cmd_state in self.parent_client.settings.user_command_states:
+            if cmd_state[self.dict_cmd_name] == cmd_name:
+                return True
+        return False
 
     def get_cmd(self, command_name):
         """Returns a Command with a command name
@@ -44,6 +77,10 @@ class CommandHandler(object):
             if cmd in self.do_not_disable:
                 return "Attempted to enable an unchangeable command."
             cmd.enabled = True
+
+            if self.command_state_exists(cmd.cmd_name):
+                self.parent_client.settings.delete_command_state(
+                    {self.dict_cmd_name: cmd.cmd_name, self.dict_enabled: "False"})
             return "Enabled '{}'".format(command_name)
         except AttributeError:
             return "Failed to enable command, '{}' doesn't exist.".format(command_name)
@@ -54,6 +91,10 @@ class CommandHandler(object):
             if cmd in self.do_not_disable:
                 return "Attempted to disable an unchangeable command."
             cmd.enabled = False
+
+            if not self.command_state_exists(cmd.cmd_name):
+                self.parent_client.settings.save_user_defaults(
+                    command_state={self.dict_cmd_name: cmd.cmd_name, self.dict_enabled: "False"})
             return "Disabled '{}'".format(command_name)
         except AttributeError:
             return "Failed to disable command, '{}' doesn't exist.".format(command_name)

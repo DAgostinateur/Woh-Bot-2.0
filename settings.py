@@ -8,9 +8,11 @@ class Settings(object):
     default_bot_notification_time = 11  # hour of the day i.e 11am
 
     json_notification_time = "default_notification_time"
+    json_command_states = "command_states"
 
     def __init__(self):
         self.default_user_notification_time = None
+        self.user_command_states = None
 
         self.json_settings_defaults = None
 
@@ -37,14 +39,36 @@ class Settings(object):
             self.json_settings_defaults = json.load(file)
 
             self.default_user_notification_time = self.set_user_default(self.json_notification_time)
+            self.user_command_states = self.set_user_default(self.json_command_states)
 
-    def save_user_defaults(self, notification_time=None):
+    def save_user_defaults(self, notification_time=None, command_state=None):
         if notification_time is None:
             notification_time = self.get_default_notification_time()
         else:
             self.default_user_notification_time = notification_time
 
-        info_dicts = {self.json_notification_time: notification_time}
+        # format: {'cmd_name':name, 'enabled':'False'}
+        # Should never be True
+        if command_state is not None:
+            if self.user_command_states is None:
+                self.user_command_states = [command_state]
+            else:
+                self.user_command_states.append(command_state)
+
+        info_dicts = {self.json_notification_time: notification_time,
+                      self.json_command_states: self.user_command_states}
+        json_string = json.dumps(info_dicts, indent=4, separators=(',', ' : '))
+
+        with open(self.default_bot_settings_file, 'w') as file:
+            file.write(json_string)
+
+    def delete_command_state(self, cmd_state):
+        try:
+            self.user_command_states.remove(cmd_state)
+        except ValueError:
+            return
+        info_dicts = {self.json_notification_time: self.default_user_notification_time,
+                      self.json_command_states: self.user_command_states}
         json_string = json.dumps(info_dicts, indent=4, separators=(',', ' : '))
 
         with open(self.default_bot_settings_file, 'w') as file:

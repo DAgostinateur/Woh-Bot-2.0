@@ -41,8 +41,8 @@ class Command(object):
         return discord.Embed(title=title, description=description, colour=self.colour_royal_purple)
 
     def get_help_inline(self):
-        return {"name": "{} - {}{} {}".format(self.get_permission_name(self.perm_level), self.parent_client.prefix,
-                                              self.cmd_name, self.arguments),
+        return {"name": "{} - {} - {}{} {}".format(self.get_state_name(), self.get_permission_name(self.perm_level),
+                                                   self.parent_client.prefix, self.cmd_name, self.arguments),
                 "value": self.help_description}
 
     def get_cmd(self, message: discord.Message):
@@ -65,6 +65,12 @@ class Command(object):
             return "Bot Owner"
         else:
             return "Perms broken"
+
+    def get_state_name(self):
+        if self.enabled:
+            return "Enabled"
+        else:
+            return "Disabled"
 
     def has_permission(self, perms, user_id, server_id):
         if perms == self.permission_none:
