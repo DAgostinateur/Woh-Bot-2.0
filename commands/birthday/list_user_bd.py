@@ -82,10 +82,6 @@ class ListUserBD(command_template.Command):
         embeds = []
         description = ""
 
-        if self.check_argument_options(message) is None:
-            await self.send_message_check_forbidden(message, "Invalid arguments.")
-            return embeds
-
         if len(self.get_birthday_inlines(message)) == 0:
             return self.make_embed("No one in the list!", None)
 
