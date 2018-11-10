@@ -21,9 +21,10 @@ class Help(command_template.Command):
         embeds = []
 
         title = "Commands:"
-        description = "Prefix: {}\n'()' means optional,\n'(-letter/letter)' means optional options, " \
-                      "can be combined if specified, slash isn't included in the command,\n'[] " \
-                      "means required".format(self.parent_client.prefix)
+        description = "Prefix: {}\nCommand names are not case sensitive.\n" \
+                      "'()' means optional.\n'(-letter/letter)' means optional options, " \
+                      "can be combined if specified, slash isn't included in the command.\n" \
+                      "'[]' means required.".format(self.parent_client.prefix)
 
         for fields in util.split_list(self.handler.get_cmd_inlines(), 25):
             embed = discord.Embed(title=title, description=description, colour=self.colour_royal_purple)
@@ -47,7 +48,7 @@ class Help(command_template.Command):
         if not self.execute_cmd(message):
             return
 
-        command = self.handler.get_cmd(self.rm_cmd(message))
+        command = self.handler.get_cmd(self.rm_cmd(message).lower())
         try:
             if command is None:
                 for embed in self.get_full_cmd_embeds():

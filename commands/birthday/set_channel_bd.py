@@ -26,8 +26,8 @@ class SetChannelBD(command_template.Command):
                 await self.send_message_check_forbidden(message, "Invalid channel.")
             else:
                 self.parent_client.birthday_handler.save_channel_birthday(channel_id, message.server.id)
-                await self.send_message_check_forbidden(message, "Birthday channel changed to {}.".format(
+                await self.send_message_check_forbidden(message, "Birthday channel changed to {}!".format(
                     util.channel_format(channel_id)))
         else:
             self.parent_client.birthday_handler.remove_channel_birthday(message.server.id)
-            await self.send_message_check_forbidden(message, "Birthday channel removed.")
+            await self.send_message_check_forbidden(message, "Birthday channel removed!")

@@ -11,7 +11,6 @@ import util
 
 
 # TODO:
-# AddUserAdmin, RmUserAdmin and ListUserAdmin commands.
 # Set different prefixes for servers.
 # Proper Logging.
 # Control Terraria Server, basically finish what I started with the first bot.

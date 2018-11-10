@@ -1,3 +1,4 @@
+import discord
 import os
 import json
 
@@ -25,6 +26,13 @@ class AdminHandler(object):
 
     def is_user_admin(self, user_id, server_id):
         return self.get_user_admin(user_id, server_id) is not None
+
+    def get_admin_count(self, server: discord.Server):
+        count = 0
+        for admin in self.user_admins:
+            if admin.server_id == server.id and server.get_member(admin.user_id) is not None:
+                count += 1
+        return count
 
     def get_user_admin(self, user_id, server_id):
         """Returns a UserAdmin with a user id and server id

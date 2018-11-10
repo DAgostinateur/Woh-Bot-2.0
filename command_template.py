@@ -12,6 +12,7 @@ class Command(object):
 
     colour_royal_purple = 7885225
     colour_birthday = 16428082
+    colour_admin = 27476
 
     def __init__(self, handler):
         self.handler = handler
@@ -34,15 +35,19 @@ class Command(object):
         return self.handler.parent_client
 
     def get_help_embedded(self):
-        title = "Command Name: {}".format(self.cmd_name)
-        description = "\nPermission Level: {}\nUse: {}{} {}\n\n{}".format(self.get_permission_name(self.perm_level),
-                                                                          self.parent_client.prefix, self.cmd_name,
-                                                                          self.arguments, self.help_description)
+        title = "Command Name: {}".format(self.cmd_name.upper())
+        description = "\nState: {}\nPermission Level: {}\nUse: {}{} {}\n\n{}".format(self.get_state_name(),
+                                                                                     self.get_permission_name(
+                                                                                         self.perm_level),
+                                                                                     self.parent_client.prefix,
+                                                                                     self.cmd_name,
+                                                                                     self.arguments,
+                                                                                     self.help_description)
         return discord.Embed(title=title, description=description, colour=self.colour_royal_purple)
 
     def get_help_inline(self):
         return {"name": "{} - {} - {}{} {}".format(self.get_state_name(), self.get_permission_name(self.perm_level),
-                                                   self.parent_client.prefix, self.cmd_name, self.arguments),
+                                                   self.parent_client.prefix, self.cmd_name.upper(), self.arguments),
                 "value": self.help_description}
 
     def get_cmd(self, message: discord.Message):

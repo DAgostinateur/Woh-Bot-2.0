@@ -29,8 +29,7 @@ class ListUserBD(command_template.Command):
 
     @staticmethod
     def make_field(member, value):
-        return {"name": member.name, "inline": "true",
-                "value": value}
+        return {"name": member.name, "inline": "true", "value": value}
 
     def make_embed(self, description, fields):
         embed = discord.Embed(colour=self.colour_birthday, description=description)
@@ -44,9 +43,9 @@ class ListUserBD(command_template.Command):
 
         return embed
 
-    def get_count_description(self, message):
+    def get_count_description(self, message: discord.Message):
         return "There's {} members in the birthday list in this server".format(
-            self.parent_client.birthday_handler.get_birthday_count(message))
+            self.parent_client.birthday_handler.get_birthday_count(message.server))
 
     def add_astrological_signs(self, member, user_bd):
         return self.make_field(member, "{} {}  - {}".format(user_bd.get_readable_month(),
@@ -83,7 +82,7 @@ class ListUserBD(command_template.Command):
         description = ""
 
         if len(self.get_birthday_inlines(message)) == 0:
-            return self.make_embed("No one in the list!", None)
+            embeds.append(self.make_embed("No one is in this list!", None))
 
         if self.has_wanted_argument(message, "c"):
             description = self.get_count_description(message)

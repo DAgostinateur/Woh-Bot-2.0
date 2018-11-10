@@ -4,6 +4,7 @@ import wohbot2
 from commands import set_presence
 from commands.cant_be_disabled import disable, enable, help
 from commands.birthday import set_channel_bd, show_channel_bd, set_user_bd, set_notif_time, list_user_bd
+from commands.admin import list_user_admin, add_user_admin, rm_user_admin
 
 
 class CommandHandler(object):
@@ -60,8 +61,9 @@ class CommandHandler(object):
 
     def get_commands(self):
         return [set_presence.SetPresence(self), disable.Disable(self), enable.Enable(self),
-                set_notif_time.SetNotifTime(self), set_channel_bd.SetChannelBD(self),
-                show_channel_bd.ShowChannelBD(self), list_user_bd.ListUserBD(self), set_user_bd.SetUserBD(self),
+                set_notif_time.SetNotifTime(self), add_user_admin.AddUserAdmin(self), rm_user_admin.RmUserAdmin(self),
+                set_channel_bd.SetChannelBD(self), show_channel_bd.ShowChannelBD(self),
+                list_user_admin.ListUserAdmin(self), list_user_bd.ListUserBD(self), set_user_bd.SetUserBD(self),
                 help.Help(self)]
 
     async def check_message(self, message: discord.Message):
@@ -81,7 +83,7 @@ class CommandHandler(object):
             if self.command_state_exists(cmd.cmd_name):
                 self.parent_client.settings.delete_command_state(
                     {self.dict_cmd_name: cmd.cmd_name, self.dict_enabled: "False"})
-            return "Enabled '{}'".format(command_name)
+            return "Enabled '{}'!".format(command_name)
         except AttributeError:
             return "Failed to enable command, '{}' doesn't exist.".format(command_name)
 
@@ -95,6 +97,6 @@ class CommandHandler(object):
             if not self.command_state_exists(cmd.cmd_name):
                 self.parent_client.settings.save_user_defaults(
                     command_state={self.dict_cmd_name: cmd.cmd_name, self.dict_enabled: "False"})
-            return "Disabled '{}'".format(command_name)
+            return "Disabled '{}'!".format(command_name)
         except AttributeError:
             return "Failed to disable command, '{}' doesn't exist.".format(command_name)
