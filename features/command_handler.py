@@ -1,10 +1,12 @@
 import discord
 
 import wohbot2
-from commands import set_presence
-from commands.cant_be_disabled import disable, enable, help
-from commands.birthday import set_channel_bd, show_channel_bd, set_user_bd, set_notif_time, list_user_bd
+
 from commands.admin import list_user_admin, add_user_admin, rm_user_admin
+from commands.birthday import set_channel_bd, show_channel_bd, set_user_bd, set_notif_time, list_user_bd
+from commands.cant_be_disabled import disable, enable, help
+from commands.music import play, leave
+from commands import set_presence
 
 
 class CommandHandler(object):
@@ -18,6 +20,8 @@ class CommandHandler(object):
 
         self.commands = self.get_commands()
         self.set_every_command_state()
+
+        self.parent_client.loop.create_task(self.get_cmd("play").disconnect_timer())
 
     def set_every_command_state(self):
         if self.parent_client.settings.user_command_states is None:
@@ -61,6 +65,7 @@ class CommandHandler(object):
 
     def get_commands(self):
         return [set_presence.SetPresence(self), disable.Disable(self), enable.Enable(self),
+                play.Play(self), leave.Leave(self),
                 set_notif_time.SetNotifTime(self), add_user_admin.AddUserAdmin(self), rm_user_admin.RmUserAdmin(self),
                 set_channel_bd.SetChannelBD(self), show_channel_bd.ShowChannelBD(self),
                 list_user_admin.ListUserAdmin(self), list_user_bd.ListUserBD(self), set_user_bd.SetUserBD(self),

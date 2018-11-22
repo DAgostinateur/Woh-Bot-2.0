@@ -1,9 +1,10 @@
+import aiohttp
 import discord
 from datetime import datetime
 
-from features.birthday import birthday_handler
 from features.admin import admin_handler
-from features import special_reactions, command_handler
+from features.birthday import birthday_handler
+from features import special_reactions, command_handler, ping_for_help
 
 import settings
 import hidden
@@ -11,8 +12,11 @@ import util
 
 
 # TODO:
+# Remake the help command, there's too many commands displayed, drowns the channel.
+# Better way to load commands.
 # Set different prefixes for servers.
 # Proper Logging.
+# Music. Only to support my local playlist.
 # Control Terraria Server, basically finish what I started with the first bot.
 
 
@@ -33,6 +37,7 @@ class WohBot(discord.Client):
         self.birthday_handler = birthday_handler.BirthdayHandler(self)
         self.special_reactions = special_reactions.SpecialReactions(self)
         self.command_handler = command_handler.CommandHandler(self)
+        self.ping_for_help = ping_for_help.PingForHelp(self)  # This needs a better name
 
         self.loop.create_task(self.birthday_handler.happy_birthday_checker())
 
@@ -61,30 +66,58 @@ class WohBot(discord.Client):
         if not message.channel.is_private:
             await self.special_reactions.check_message(message)
             await self.command_handler.check_message(message)
+            await self.ping_for_help.check_message(message)
+
+    async def on_member_join(self, member: discord.Member):
+        try:
+            print("User Joined Server '{}' at {} - {}".format(member.server.name, str(datetime.now().time())[:8],
+                                                              member.name))
+        except UnicodeEncodeError:
+            print("User Joined Server '{}' at {} - {}".format(member.server.id, str(datetime.now().time())[:8],
+                                                              member.id))
+
+    async def on_member_remove(self, member: discord.Member):
+        try:
+            print("User Left Server '{}' at {} - {}".format(member.server.name, str(datetime.now().time())[:8],
+                                                            member.name))
+        except UnicodeEncodeError:
+            print(
+                "User Left Server '{}' at {} - {}".format(member.server.id, str(datetime.now().time())[:8], member.id))
 
     async def on_voice_state_update(self, before: discord.Member, after: discord.Member):
         if before.voice.voice_channel is None and after.voice.voice_channel is not None:
             try:
-                print("User Joined VC at {} - {}".format(str(datetime.now().time())[:8], after.name))
+                print("User Joined VC in '{}' at {} - {}".format(after.server.name, str(datetime.now().time())[:8],
+                                                                 after.name))
             except UnicodeEncodeError:
-                print("User Joined VC at {} - {}".format(str(datetime.now().time())[:8], after.id))
+                print("User Joined VC in '{}' at {} - {}".format(after.server.id, str(datetime.now().time())[:8],
+                                                                 after.id))
 
         if before.voice.voice_channel is not None and after.voice.voice_channel is None:
             try:
-                print("User Left VC at {} - {}".format(str(datetime.now().time())[:8], after.name))
+                print("User Left VC in '{}' at {} - {}".format(after.server.name, str(datetime.now().time())[:8],
+                                                               after.name))
             except UnicodeEncodeError:
-                print("User Left VC at {} - {}".format(str(datetime.now().time())[:8], after.id))
+                print("User Left VC in '{}' at {} - {}".format(after.server.id, str(datetime.now().time())[:8],
+                                                               after.id))
 
     async def on_reaction_add(self, reaction, user):
         if user == self.user:
             return
 
-        # if reaction.emoji == util.get_custom_emoji(list(self.get_all_emojis()), 'woh'):
         if type(reaction.emoji) is discord.Emoji:
             if reaction.emoji.name == 'woh':
                 await self.add_reaction(reaction.message, reaction.emoji)
 
 
 if __name__ == '__main__':
-    client = WohBot()
-    client.run(hidden.token())
+    try:
+        print(str(datetime.today()))
+        client = WohBot()
+        client.run(hidden.token())
+    except ConnectionResetError:
+        print("No Internet connection.")
+        exit(1)
+    except aiohttp.ClientOSError:
+        print("Could not connect to Discord.")
+        exit(1)

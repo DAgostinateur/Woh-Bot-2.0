@@ -14,7 +14,7 @@ class ListUserAdmin(command_template.Command):
         self.arguments = "(-c)"
         self.option_letters = "c"
         self.help_description = "Lists everyone with admin power for this bot in this server. " \
-                                "'c' will display the birthday count."
+                                "'c' will display the admin count."
 
     @staticmethod
     def make_field(member):

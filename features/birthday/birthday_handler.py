@@ -70,7 +70,6 @@ class BirthdayHandler(object):
                     if mm_dd == user_bd.birthday_date and channel_bd.server_id == user_bd.server_id:
                         await self.send_birthday_message(channel_bd.channel_id, user_bd.user_id)
 
-            print(str(datetime.datetime.today()))
             await asyncio.sleep(util.get_next_day_delta(self.parent_client.settings.get_default_notification_time()))
 
     def check_birthday_lists(self):
