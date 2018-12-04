@@ -1,6 +1,7 @@
 import discord
 import datetime
 import os
+import string
 
 import hidden
 
@@ -37,6 +38,14 @@ def get_next_day_delta(hour: int):
             today_t = today_n.replace(year=today_n.year + 1, month=1, day=1, hour=hour, minute=0, second=0,
                                       microsecond=0)
     return int((today_t - today_n).seconds + 1)
+
+
+def is_music_file(file: str):
+    return os.path.isfile(file) and file.lower().endswith('.mp3')
+
+
+def is_printable(s: str):
+    return all(c in string.printable for c in s)
 
 
 def is_int(text):

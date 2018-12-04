@@ -22,6 +22,5 @@ class Leave(command_template.Command):
             if vc is not None:
                 play_cmd = self.handler.get_cmd("play")
                 if play_cmd is not None:
-                    play_cmd.player = None
-                    play_cmd.vc = None
+                    play_cmd.leave_vc()
                 await vc.disconnect()

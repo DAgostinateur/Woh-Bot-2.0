@@ -48,7 +48,7 @@ class Command(object):
     def get_help_inline(self):
         return {"name": "{} - {} - {}{} {}".format(self.get_state_name(), self.get_permission_name(self.perm_level),
                                                    self.parent_client.prefix, self.cmd_name.upper(), self.arguments),
-                "value": self.help_description}
+                "value": self.help_description, "inline": "true"}
 
     def get_cmd(self, message: discord.Message):
         return message.content[:len(self.parent_client.prefix + self.cmd_name)]
@@ -122,8 +122,10 @@ class Command(object):
 
         return True
 
-    async def send_message_check_forbidden(self, message, text):
+    async def send_message_check(self, channel: discord.Channel, text):
         try:
-            await self.parent_client.send_message(message.channel, text)
+            await self.parent_client.send_message(channel, text)
+        except discord.NotFound:
+            print("Channel '{}' probably doesn't exist.".format(channel.id))
         except discord.Forbidden:
-            print("Client doesn't have permission to send a message in '{}'.".format(message.channel.id))
+            print("Client doesn't have permission to send a message in '{}'.".format(channel.id))

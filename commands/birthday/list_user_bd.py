@@ -20,7 +20,7 @@ class ListUserBD(command_template.Command):
 
     @staticmethod
     def sort_by_closest(bd_list: list):
-        return sorted([x for x in bd_list if x.get_datetime_date() > datetime.date.today()],
+        return sorted([x for x in bd_list if x.get_datetime_date() >= datetime.date.today()],
                       key=lambda s: s.get_datetime_date() - datetime.date.today())
 
     @staticmethod
@@ -39,7 +39,7 @@ class ListUserBD(command_template.Command):
 
         if fields is not None:
             for field in fields:
-                embed.add_field(name=field["name"], value=field["value"])
+                embed.add_field(name=field["name"], value=field["value"], inline=field["inline"])
 
         return embed
 

@@ -1,5 +1,6 @@
 import aiohttp
 import discord
+import time
 from datetime import datetime
 
 from features.admin import admin_handler
@@ -26,8 +27,11 @@ class WohBot(discord.Client):
     def __init__(self):
         super(WohBot, self).__init__()
 
+        self.version = "2.0.8"
+
         util.check_folder(self.data_folder)
 
+        self.music_repeat = False
         self.prefix = "w!"
         self.default_presence = "Prefix: " + self.prefix
         self.owner = None
@@ -54,9 +58,10 @@ class WohBot(discord.Client):
         print("-------")
         print("Woh Bot 2.0")
         print("-------")
-        print("Logged in as {}".format(self.user))
-        print("Creator: {}".format(self.owner.name))
-        print("Prefix: {}".format(self.prefix))
+        print("Logged in as " + str(self.user))
+        print("Creator: " + self.owner.name)
+        print("Prefix: " + self.prefix)
+        print("Version: " + self.version)
         print("-------\n")
 
     async def on_message(self, message: discord.Message):
@@ -68,38 +73,29 @@ class WohBot(discord.Client):
             await self.command_handler.check_message(message)
             await self.ping_for_help.check_message(message)
 
+    def print_member_updates(self, text: str, member: discord.Member):
+        member_name = member.name
+        server_name = member.server.name
+        if not util.is_printable(member_name):
+            member_name = member.id
+
+        if not util.is_printable(server_name):
+            server_name = member.server.id
+
+        print(text.format(server_name, str(datetime.now().time())[:8], member_name))
+
     async def on_member_join(self, member: discord.Member):
-        try:
-            print("User Joined Server '{}' at {} - {}".format(member.server.name, str(datetime.now().time())[:8],
-                                                              member.name))
-        except UnicodeEncodeError:
-            print("User Joined Server '{}' at {} - {}".format(member.server.id, str(datetime.now().time())[:8],
-                                                              member.id))
+        self.print_member_updates("User Joined SERVER '{0}' at {1} - {2}", member)
 
     async def on_member_remove(self, member: discord.Member):
-        try:
-            print("User Left Server '{}' at {} - {}".format(member.server.name, str(datetime.now().time())[:8],
-                                                            member.name))
-        except UnicodeEncodeError:
-            print(
-                "User Left Server '{}' at {} - {}".format(member.server.id, str(datetime.now().time())[:8], member.id))
+        self.print_member_updates("User Left SERVER '{0}' at {1} - {2}", member)
 
     async def on_voice_state_update(self, before: discord.Member, after: discord.Member):
         if before.voice.voice_channel is None and after.voice.voice_channel is not None:
-            try:
-                print("User Joined VC in '{}' at {} - {}".format(after.server.name, str(datetime.now().time())[:8],
-                                                                 after.name))
-            except UnicodeEncodeError:
-                print("User Joined VC in '{}' at {} - {}".format(after.server.id, str(datetime.now().time())[:8],
-                                                                 after.id))
+            self.print_member_updates("User Joined VC in '{0}' at {1} - {2}", after)
 
         if before.voice.voice_channel is not None and after.voice.voice_channel is None:
-            try:
-                print("User Left VC in '{}' at {} - {}".format(after.server.name, str(datetime.now().time())[:8],
-                                                               after.name))
-            except UnicodeEncodeError:
-                print("User Left VC in '{}' at {} - {}".format(after.server.id, str(datetime.now().time())[:8],
-                                                               after.id))
+            self.print_member_updates("User Left VC in '{0}' at {1} - {2}", after)
 
     async def on_reaction_add(self, reaction, user):
         if user == self.user:
@@ -111,13 +107,14 @@ class WohBot(discord.Client):
 
 
 if __name__ == '__main__':
+    print(str(datetime.today()))
     try:
-        print(str(datetime.today()))
         client = WohBot()
         client.run(hidden.token())
+    except RuntimeError:
+        print("A task broke.")
     except ConnectionResetError:
         print("No Internet connection.")
-        exit(1)
     except aiohttp.ClientOSError:
         print("Could not connect to Discord.")
-        exit(1)
+    time.sleep(4)

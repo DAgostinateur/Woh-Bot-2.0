@@ -42,7 +42,7 @@ class BirthdayHandler(object):
 
     async def send_birthday_message(self, channel_id, user_id):
         user = await self.parent_client.get_user_info(user_id)
-        message = "Happy Birthday {0}".format(user.mention)
+        message = "Happy Birthday {0}!!".format(user.mention)
         try:
             await self.parent_client.send_message(self.parent_client.get_channel(channel_id), message)
         except discord.NotFound:

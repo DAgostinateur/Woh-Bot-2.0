@@ -23,11 +23,11 @@ class SetChannelBD(command_template.Command):
         if len(channel_id) != 0:
             channel_id = re.sub("\D+", "", self.rm_cmd(message))
             if message.server.get_channel(channel_id) is None:
-                await self.send_message_check_forbidden(message, "Invalid channel.")
+                await self.send_message_check(message.channel, "Invalid channel.")
             else:
                 self.parent_client.birthday_handler.save_channel_birthday(channel_id, message.server.id)
-                await self.send_message_check_forbidden(message, "Birthday channel changed to {}!".format(
+                await self.send_message_check(message.channel, "Birthday channel changed to {}!".format(
                     util.channel_format(channel_id)))
         else:
             self.parent_client.birthday_handler.remove_channel_birthday(message.server.id)
-            await self.send_message_check_forbidden(message, "Birthday channel removed!")
+            await self.send_message_check(message.channel, "Birthday channel removed!")

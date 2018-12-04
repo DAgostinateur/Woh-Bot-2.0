@@ -22,17 +22,17 @@ class SetNotifTime(command_template.Command):
         hour = self.rm_cmd(message)
         if len(hour) != 0:
             if not util.is_int(hour):
-                await self.send_message_check_forbidden(message, "Invalid hour.")
+                await self.send_message_check(message.channel, "Invalid hour.")
                 return
 
             hour = int(hour)
             if not (0 <= hour <= 23):
-                await self.send_message_check_forbidden(message, "Invalid hour.")
+                await self.send_message_check(message.channel, "Invalid hour.")
             else:
                 self.parent_client.settings.save_user_defaults(notification_time=hour)
-                await self.send_message_check_forbidden(message,
+                await self.send_message_check(message.channel,
                                                         "Birthday messages will be sent at {}:00 EST!".format(hour))
         else:
             self.parent_client.settings.save_user_defaults(
                 notification_time=self.parent_client.settings.default_bot_notification_time)
-            await self.send_message_check_forbidden(message, "Notification time back to default!")
+            await self.send_message_check(message.channel, "Notification time back to default!")

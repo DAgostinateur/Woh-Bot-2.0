@@ -1,6 +1,8 @@
 import discord
 import re
 
+import hidden
+
 
 class PingForHelp:
     def __init__(self, client):
@@ -24,8 +26,9 @@ class PingForHelp:
     async def check_message(self, message: discord.Message):
         if self.pinged_client(message):
             try:
-                await self.parent_client.send_message(message.channel,
-                                                      "Prefix for this server: {0}\nHelp Command: {0}help".format(
-                                                          self.parent_client.prefix))
+                text = ("Did you possibly mean to ping {2}\nVersion : {0}\nPrefix for this server: {1}"
+                        "\nHelp Command: {1}help".format(self.parent_client.version, self.parent_client.prefix,
+                                                         message.server.get_member(hidden.owner_id()).mention))
+                await self.parent_client.send_message(message.channel, text)
             except discord.Forbidden:
                 print("Client doesn't have permission to send a message in '{}'.".format(message.channel.id))

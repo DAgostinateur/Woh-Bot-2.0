@@ -30,7 +30,7 @@ class SetUserBD(command_template.Command):
         mm_dd = self.rm_cmd(message)
         if len(mm_dd) != 0:
             if not self.validate_date(mm_dd):
-                self.send_message_check_forbidden(message, "Invalid date.")
+                self.send_message_check(message.channel, "Invalid date.")
             else:
                 if self.parent_client.birthday_handler.get_user_bd(message.author.id, message.server.id) is not None:
                     self.parent_client.birthday_handler.remove_user_birthday(message.author.id, message.server.id)
@@ -38,13 +38,13 @@ class SetUserBD(command_template.Command):
                 self.parent_client.birthday_handler.save_user_birthday(message.author.id, mm_dd, message.server.id)
                 user_bd = self.parent_client.birthday_handler.get_user_bd(message.author.id, message.server.id)
 
-                await self.send_message_check_forbidden(message, "Your birthday has been set for {} {}!".format(
+                await self.send_message_check(message.channel, "Your birthday has been set for {} {}!".format(
                     user_bd.get_readable_month(), user_bd.get_readable_day()))
 
         else:
             if self.parent_client.birthday_handler.get_user_bd(message.author.id, message.server.id) is not None:
                 self.parent_client.birthday_handler.remove_user_birthday(message.author.id, message.server.id)
-                await self.send_message_check_forbidden(message, "Your birthday was removed!")
+                await self.send_message_check(message.channel, "Your birthday was removed!")
             else:
-                await self.send_message_check_forbidden(message,
+                await self.send_message_check(message.channel,
                                                         "Your birthday wasn't removed because it's not in the list.")

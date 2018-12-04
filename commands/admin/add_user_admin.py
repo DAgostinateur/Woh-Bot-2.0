@@ -23,15 +23,16 @@ class AddUserAdmin(command_template.Command):
         if len(user_id) != 0:
             user_id = re.sub("\D+", "", self.rm_cmd(message))
             if message.server.get_member(user_id) is None:
-                await self.send_message_check_forbidden(message, "Invalid user.")
+                await self.send_message_check(message.channel, "Invalid user.")
             else:
                 if self.parent_client.admin_handler.get_user_admin(user_id, message.server.id) is not None:
-                    await self.send_message_check_forbidden(message, "User already in the admin list.")
+                    await self.send_message_check(message.channel, "User already in the admin list.")
                     return
 
                 self.parent_client.admin_handler.save_user_admin(user_id, message.server.id)
                 user = message.server.get_member(user_id)
 
-                await self.send_message_check_forbidden(message, "Granted admin commands to {}!".format(user.mention))
+                await self.send_message_check(message.channel,
+                                                        "Granted admin commands to {}!".format(user.mention))
         else:
-            await self.send_message_check_forbidden(message, "Invalid user.")
+            await self.send_message_check(message.channel, "Invalid user.")

@@ -18,4 +18,4 @@ class Disable(command_template.Command):
             return
 
         text_result = self.handler.disable_command(self.rm_cmd(message))
-        await self.send_message_check_forbidden(message, text_result)
+        await self.send_message_check(message.channel, text_result)
