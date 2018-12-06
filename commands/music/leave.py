@@ -20,7 +20,6 @@ class Leave(command_template.Command):
         if len(self.parent_client.voice_clients) != 0:
             vc = self.parent_client.voice_client_in(message.server)
             if vc is not None:
-                play_cmd = self.handler.get_cmd("play")
-                if play_cmd is not None:
-                    play_cmd.leave_vc()
-                await vc.disconnect()
+                if message.author.voice.voice_channel is not None:
+                    self.parent_client.music_handler.reset()
+                    await vc.disconnect()

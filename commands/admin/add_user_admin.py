@@ -33,6 +33,6 @@ class AddUserAdmin(command_template.Command):
                 user = message.server.get_member(user_id)
 
                 await self.send_message_check(message.channel,
-                                                        "Granted admin commands to {}!".format(user.mention))
+                                              "Granted admin commands to {}!".format(user.mention))
         else:
             await self.send_message_check(message.channel, "Invalid user.")

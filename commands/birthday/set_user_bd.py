@@ -47,4 +47,4 @@ class SetUserBD(command_template.Command):
                 await self.send_message_check(message.channel, "Your birthday was removed!")
             else:
                 await self.send_message_check(message.channel,
-                                                        "Your birthday wasn't removed because it's not in the list.")
+                                              "Your birthday wasn't removed because it's not in the list.")

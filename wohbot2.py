@@ -5,6 +5,7 @@ from datetime import datetime
 
 from features.admin import admin_handler
 from features.birthday import birthday_handler
+from features.music import music_handler
 from features import special_reactions, command_handler, ping_for_help
 
 import settings
@@ -13,11 +14,11 @@ import util
 
 
 # TODO:
+# Flatter code.
 # Remake the help command, there's too many commands displayed, drowns the channel.
 # Better way to load commands.
 # Set different prefixes for servers.
 # Proper Logging.
-# Music. Only to support my local playlist.
 # Control Terraria Server, basically finish what I started with the first bot.
 
 
@@ -27,11 +28,10 @@ class WohBot(discord.Client):
     def __init__(self):
         super(WohBot, self).__init__()
 
-        self.version = "2.0.8"
+        self.version = "2.0.9"
 
         util.check_folder(self.data_folder)
 
-        self.music_repeat = False
         self.prefix = "w!"
         self.default_presence = "Prefix: " + self.prefix
         self.owner = None
@@ -39,11 +39,13 @@ class WohBot(discord.Client):
 
         self.admin_handler = admin_handler.AdminHandler(self)
         self.birthday_handler = birthday_handler.BirthdayHandler(self)
+        self.music_handler = music_handler.MusicHandler(self)
         self.special_reactions = special_reactions.SpecialReactions(self)
         self.command_handler = command_handler.CommandHandler(self)
         self.ping_for_help = ping_for_help.PingForHelp(self)  # This needs a better name
 
         self.loop.create_task(self.birthday_handler.happy_birthday_checker())
+        self.loop.create_task(self.music_handler.disconnect_timer())
 
     async def _get_client_owner(self):
         app_info = await self.application_info()

@@ -11,14 +11,11 @@ class Repeat(command_template.Command):
         self.perm_level = self.permission_everyone
         self.cmd_name = "loop"
         self.arguments = ""
-        self.help_description = "Loops the current song. There might be a 0 to 4 second delay between songs."
+        self.help_description = "Loops the current song."
 
     async def command(self, message: discord.Message):
         if not self.execute_cmd(message):
             return
 
-        self.parent_client.music_repeat = not self.parent_client.music_repeat
-        if self.parent_client.music_repeat:
-            await self.send_message_check(message.channel, "Current song now repeats.")
-        else:
-            await self.send_message_check(message.channel, "Current song no longer repeats.")
+        text_output = self.parent_client.music_handler.repeat()
+        await self.send_message_check(message.channel, text_output)

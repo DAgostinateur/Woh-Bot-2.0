@@ -52,8 +52,9 @@ class BirthdayHandler(object):
 
     async def happy_birthday_checker(self):
         await self.parent_client.wait_until_ready()
-
         while not self.parent_client.is_closed:
+            await asyncio.sleep(util.get_next_day_delta(self.parent_client.settings.get_default_notification_time()))
+
             mm_dd = str(datetime.datetime.today())[5:10]
             for channel_bd in self.channel_birthdays:
                 if self.first_boot:
@@ -69,8 +70,6 @@ class BirthdayHandler(object):
 
                     if mm_dd == user_bd.birthday_date and channel_bd.server_id == user_bd.server_id:
                         await self.send_birthday_message(channel_bd.channel_id, user_bd.user_id)
-
-            await asyncio.sleep(util.get_next_day_delta(self.parent_client.settings.get_default_notification_time()))
 
     def check_birthday_lists(self):
         for channel_bd in self.channel_birthdays:

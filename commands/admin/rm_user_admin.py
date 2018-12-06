@@ -33,6 +33,6 @@ class RmUserAdmin(command_template.Command):
                 user = message.server.get_member(user_id)
 
                 await self.send_message_check(message.channel,
-                                                        "Removed admin commands from {}!".format(user.mention))
+                                              "Removed admin commands from {}!".format(user.mention))
         else:
             await self.send_message_check(message.channel, "Invalid user.")

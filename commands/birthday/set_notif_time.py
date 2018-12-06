@@ -31,7 +31,7 @@ class SetNotifTime(command_template.Command):
             else:
                 self.parent_client.settings.save_user_defaults(notification_time=hour)
                 await self.send_message_check(message.channel,
-                                                        "Birthday messages will be sent at {}:00 EST!".format(hour))
+                                              "Birthday messages will be sent at {}:00 EST!".format(hour))
         else:
             self.parent_client.settings.save_user_defaults(
                 notification_time=self.parent_client.settings.default_bot_notification_time)

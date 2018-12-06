@@ -52,7 +52,7 @@ class Help(command_template.Command):
         try:
             if command is None:
                 for embed in self.get_full_cmd_embeds():
-                    await self.parent_client.send_message(message.channel, embed=embed)
+                    await self.parent_client.send_message(message.author, embed=embed)
             else:
                 await self.parent_client.send_message(message.channel, embed=command.get_help_embedded())
         except discord.Forbidden:
