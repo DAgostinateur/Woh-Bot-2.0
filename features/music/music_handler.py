@@ -8,7 +8,7 @@ import features.music.song
 
 
 class MusicHandler(object):
-    default_volume = 0.5
+    default_volume = 0.25
 
     crab_rave = "D:/Desktop files/Music/Crab Rave Mother 3.mp3"
     deltarune_folder = "D:/Desktop files/Music/HighQualityVideoGameRips/Toby Fox - DELTARUNE Chapter 1 OST"
@@ -89,14 +89,17 @@ class MusicHandler(object):
         # Return is the text output to send in chat
         # Check with is_in_vc before coming here
         if music_option == "deltarune":
+            await self.send_message_check(message.channel, "Loading playlist.")
             self.set_playlist(self.deltarune_folder)
             await self.make_voice_client(message)
             await self.make_player(self.playlist_songs[self.playlist_index])
         elif music_option == "hqplaylist":
+            await self.send_message_check(message.channel, "Loading playlist.")
             self.set_multi_folder_playlist(self.hqplaylist_folder)
             await self.make_voice_client(message)
             await self.make_player(self.playlist_songs[self.playlist_index])
         elif music_option == 'crab':
+            await self.send_message_check(message.channel, "Loading song.")
             await self.make_voice_client(message)
             await self.make_player(features.music.song.Song(self.crab_rave))
         else:
@@ -154,17 +157,9 @@ class MusicHandler(object):
         else:
             return "Loop disabled."
 
-    def music_info(self):
-        title = "N/A"
-        artist = "N/A"
-        duration = "N/A"
+    def player_info(self):
         total_songs = 0
         position = 0
-
-        if self.current_song is not None:
-            title = self.current_song.get_info(features.music.song.Song.TITLE)
-            artist = self.current_song.get_info(features.music.song.Song.ARTIST)
-            duration = util.format_duration(self.current_song.get_duration())
 
         if self.playlist_songs is None:
             if self.current_song is not None:
@@ -174,8 +169,19 @@ class MusicHandler(object):
             total_songs = len(self.playlist_songs)
             position = self.playlist_index + 1
 
-        return "Will loop: {}\nTotal Songs: {}\nCurrent position: {}\nTitle: {}\nArtist: {}\nDuration: {}".format(
-            self.music_repeat, total_songs, position, title, artist, duration)
+        return "Will loop: {}\nTotal Songs: {}\nCurrent position: {}".format(self.music_repeat, total_songs, position)
+
+    def song_info(self):
+        title = "N/A"
+        artist = "N/A"
+        duration = "N/A"
+
+        if self.current_song is not None:
+            title = self.current_song.get_info(features.music.song.Song.TITLE)
+            artist = self.current_song.get_info(features.music.song.Song.ARTIST)
+            duration = util.format_duration(self.current_song.get_duration())
+
+        return "\nTitle: {}\nArtist: {}\nDuration: {}".format(title, artist, duration)
 
     def set_multi_folder_playlist(self, double_layer_folder):
         self.playlist_songs = []

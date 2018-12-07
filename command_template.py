@@ -50,14 +50,8 @@ class Command(object):
                                                    self.parent_client.prefix, self.cmd_name.upper(), self.arguments),
                 "value": self.help_description, "inline": "true"}
 
-    def get_cmd(self, message: discord.Message):
-        return message.content[:len(self.parent_client.prefix + self.cmd_name)]
-
     def rm_cmd(self, message: discord.Message):
         return message.content[len(self.parent_client.prefix + self.cmd_name):].lstrip()
-
-    def cmd_called(self, message: discord.Message):
-        return self.get_cmd(message).lower() == self.parent_client.prefix + self.cmd_name
 
     def get_permission_name(self, perms):
         if perms == self.permission_none:
@@ -112,9 +106,6 @@ class Command(object):
 
     def execute_cmd(self, message: discord.Message):
         if not self.enabled:
-            return False
-
-        if not self.cmd_called(message):
             return False
 
         if not self.has_permission(self.perm_level, message.author.id, message.server.id):
