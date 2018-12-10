@@ -75,14 +75,14 @@ class UserBirthday:
         return int(self.birthday_date[3:5])
 
     def get_readable_day(self):
-        day = str(self.get_day_number())
-        if day == 1 or day == 31:
-            day = day + "st"
+        day = int(self.get_day_number())
+        if day == 1 or day == 21 or day == 31:
+            day = str(day) + "st"
         elif day == 2 or day == 22:
-            day = day + "nd"
+            day = str(day) + "nd"
         elif day == 3 or day == 23:
-            day = day + "rd"
+            day = str(day) + "rd"
         else:
-            day = day + "th"
+            day = str(day) + "th"
 
         return day

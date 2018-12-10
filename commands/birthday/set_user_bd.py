@@ -30,7 +30,7 @@ class SetUserBD(command_template.Command):
         mm_dd = self.rm_cmd(message)
         if len(mm_dd) != 0:
             if not self.validate_date(mm_dd):
-                self.send_message_check(message.channel, "Invalid date.")
+                await self.send_message_check(message.channel, "Invalid date.")
             else:
                 if self.parent_client.birthday_handler.get_user_bd(message.author.id, message.server.id) is not None:
                     self.parent_client.birthday_handler.remove_user_birthday(message.author.id, message.server.id)

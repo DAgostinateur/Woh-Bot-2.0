@@ -19,7 +19,7 @@ import util
 # Better way to load commands.
 # Set different prefixes for servers.
 # Proper Logging.
-# Control Terraria Server, basically finish what I started with the first bot.
+# Control Terraria Server or GMod, basically finish what I started with the first bot.
 
 
 class WohBot(discord.Client):
