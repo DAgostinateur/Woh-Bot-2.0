@@ -8,7 +8,7 @@ class Next(command_template.Command):
         super(Next, self).__init__(client)
 
         self.enabled = True
-        self.perm_level = self.permission_everyone
+        self.perm_level = self.permission_levels["everyone"]
         self.cmd_name = "next"
         self.arguments = ""
         self.help_description = "Plays the next song in a playlist."
@@ -20,6 +20,7 @@ class Next(command_template.Command):
         if self.parent_client.music_handler.is_in_vc(message):
             if self.parent_client.music_handler.playlist_songs is not None:
                 await self.parent_client.music_handler.next()
+                await self.send_message_check(message.channel, "Next song.")
             else:
                 await self.send_message_check(message.channel, "There's no playlist on.")
         else:

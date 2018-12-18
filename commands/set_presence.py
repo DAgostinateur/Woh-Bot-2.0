@@ -8,7 +8,7 @@ class SetPresence(command_template.Command):
         super(SetPresence, self).__init__(client)
 
         self.enabled = True
-        self.perm_level = self.permission_owner
+        self.perm_level = self.permission_levels["owner"]
         self.cmd_name = "setpresence"
         self.arguments = "(game)"
         self.help_description = "Sets the bot's presence. Putting nothing in (game) resets the presence."

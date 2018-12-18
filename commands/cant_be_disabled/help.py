@@ -11,7 +11,7 @@ class Help(command_template.Command):
         super(Help, self).__init__(handler)
 
         self.enabled = True  # Should never change
-        self.perm_level = self.permission_everyone
+        self.perm_level = self.permission_levels["everyone"]
         self.cmd_name = "help"
         self.arguments = "(command)"
         self.help_description = "Shows every available command and their description, can specify a command. " \
@@ -20,29 +20,24 @@ class Help(command_template.Command):
     def get_full_cmd_embeds(self):
         embeds = []
 
-        title = "Commands:"
         description = "Prefix: {}\nCommand names are not case sensitive.\n" \
                       "'()' means optional.\n'(-letter/letter)' means optional options, " \
                       "can be combined if specified, slash isn't included in the command.\n" \
                       "'[]' means required.".format(self.parent_client.prefix)
 
         for fields in util.split_list(self.handler.get_cmd_inlines(), 25):
-            embed = discord.Embed(title=title, description=description, colour=self.colour_royal_purple)
-            embed.set_author(name="Help",
-                             icon_url="https://emojipedia-us.s3.dualstack.us-west-1."
-                                      "amazonaws.com/thumbs/120/twitter/154/white-question-mark-ornament_2754.png")
-            for field in fields:
-                embed.add_field(name=field["name"], value=field["value"])
-
-            embeds.append(embed)
+            embeds.append(
+                util.make_embed(util.colour_royal_purple, description, "Help", util.image_question_mark, None, None,
+                                fields))
 
         return embeds
 
     def get_cmd_embed(self):
-        title = "Command Name: {}".format(self.cmd_name)
-        description = "\nUse: {}{} {}\n\n{}".format(self.parent_client.prefix, self.cmd_name,
-                                                    self.arguments, self.help_description)
-        return discord.Embed(title=title, description=description, colour=self.colour_royal_purple)
+        description = "\nUse: {}{} {}\n\n{}".format(self.parent_client.prefix, self.cmd_name, self.arguments,
+                                                    self.help_description)
+
+        return util.make_embed(util.colour_royal_purple, description, "Command Name: {}".format(self.cmd_name), None,
+                               None, None, None)
 
     async def command(self, message: discord.Message):
         if not self.execute_cmd(message):

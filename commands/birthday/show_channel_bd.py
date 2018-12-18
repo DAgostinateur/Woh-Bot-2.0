@@ -9,7 +9,7 @@ class ShowChannelBD(command_template.Command):
         super(ShowChannelBD, self).__init__(client)
 
         self.enabled = True
-        self.perm_level = self.permission_admin
+        self.perm_level = self.permission_levels["admin"]
         self.cmd_name = "showchannelbd"
         self.help_description = "Shows the channel used for birthday messages."
 

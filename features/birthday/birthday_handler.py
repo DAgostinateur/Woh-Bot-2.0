@@ -5,25 +5,26 @@ import discord
 import datetime
 
 import util
-from features.birthday import user_birthday, channel_birthday
+from features.birthday import user_birthday, channel_birthday, message_birthday
 
 
 class BirthdayHandler(object):
     user_birthday_file = "data/user_birthday.json"
     channel_birthday_file = "data/channel_birthday.json"
+    message_birthday_file = "data/message_birthday.json"
 
     json_user_id = "user_id"
     json_birthday_date = "birthday_date"
     json_channel_id = "channel_id"
     json_server_id = "server_id"
+    json_birthday_message = "birthday_message"
 
     def __init__(self, client):
         self.parent_client = client
 
-        self.first_boot = True
-
         self.user_birthdays = self.get_user_birthdays()
         self.channel_birthdays = self.get_channel_birthdays()
+        self.message_birthdays = self.get_message_birthdays()
 
     def _write_to_user_file(self):
         info_dicts = [
@@ -40,41 +41,62 @@ class BirthdayHandler(object):
         with open(self.channel_birthday_file, 'w') as file:
             file.write(json_string)
 
-    async def send_birthday_message(self, channel_id, user_id):
+    def _write_to_message_file(self):
+        info_dicts = [{self.json_server_id: x.server_id, self.json_birthday_message: x.birthday_message} for x in
+                      self.message_birthdays]
+        json_string = json.dumps(info_dicts, indent=4, separators=(',', ' : '))
+        with open(self.message_birthday_file, 'w') as file:
+            file.write(json_string)
+
+    async def send_birthday_message(self, channel_id, user_id, bd_message, date):
         user = await self.parent_client.get_user_info(user_id)
-        message = "Happy Birthday {0}!!".format(user.mention)
+        author_name = "Happy Birthday {}".format(user.name)
+
         try:
-            await self.parent_client.send_message(self.parent_client.get_channel(channel_id), message)
+            embed = util.make_embed(util.colour_birthday, bd_message, author_name, util.image_confetti, user.avatar_url,
+                                    date, None)
+            await self.parent_client.send_message(self.parent_client.get_channel(channel_id), content=user.mention,
+                                                  embed=embed)
         except discord.NotFound:
             print("Channel '{}' probably doesn't exist.".format(channel_id))
         except discord.Forbidden:
             print("Client doesn't have permission to send a message in '{}'.".format(channel_id))
 
     async def happy_birthday_checker(self):
+        mm_dd = str(datetime.datetime.today())[5:10]
+        for channel_bd in self.channel_birthdays:
+            server = self.parent_client.get_server(channel_bd.server_id)
+            if server is None:
+                continue
+
+            message_bd = self.get_message_bd(server.id)
+            if message_bd is not None:
+                message_bd = message_bd.birthday_message
+            else:
+                message_bd = message_birthday.MessageBirthday.default_message
+
+            for user_bd in self.user_birthdays:
+                if server.get_member(user_bd.user_id) is None:
+                    continue
+
+                if mm_dd == user_bd.birthday_date and channel_bd.server_id == user_bd.server_id:
+                    await self.send_birthday_message(channel_bd.channel_id, user_bd.user_id, message_bd,
+                                                     user_bd.get_readable_date())
+
+    async def birthday_timer(self):
         await self.parent_client.wait_until_ready()
         while not self.parent_client.is_closed:
             await asyncio.sleep(util.get_next_day_delta(self.parent_client.settings.get_default_notification_time()))
-
-            mm_dd = str(datetime.datetime.today())[5:10]
-            for channel_bd in self.channel_birthdays:
-                if self.first_boot:
-                    self.first_boot = False
-                    break
-                server = self.parent_client.get_server(channel_bd.server_id)
-                if server is None:
-                    continue
-
-                for user_bd in self.user_birthdays:
-                    if server.get_member(user_bd.user_id) is None:
-                        continue
-
-                    if mm_dd == user_bd.birthday_date and channel_bd.server_id == user_bd.server_id:
-                        await self.send_birthday_message(channel_bd.channel_id, user_bd.user_id)
+            await self.happy_birthday_checker()
 
     def check_birthday_lists(self):
         for channel_bd in self.channel_birthdays:
             server = self.parent_client.get_server(channel_bd.server_id)
             if server is None:
+                message_bd = self.get_message_bd(channel_bd.server_id)
+                if message_bd is not None:
+                    self.remove_message_birthday(channel_bd.server_id)
+
                 self.remove_channel_birthday(channel_bd.server_id)
             else:
                 for user_bd in self.user_birthdays:
@@ -110,6 +132,17 @@ class BirthdayHandler(object):
         for channel_bd in self.channel_birthdays:
             if channel_bd.server_id == server_id:
                 return channel_bd
+        return None
+
+    def get_message_bd(self, server_id):
+        """Returns a MessageBirthday with a server id
+
+        :param server_id:
+        :return: MessageBirthday
+        """
+        for message_bd in self.message_birthdays:
+            if message_bd.server_id == server_id:
+                return message_bd
         return None
 
     def get_user_birthdays(self):
@@ -175,10 +208,45 @@ class BirthdayHandler(object):
     def remove_channel_birthday(self, server_id):
         try:
             self.channel_birthdays.remove(self.get_channel_bd(server_id))
-        except ValueError:
+        except (ValueError, AttributeError):
             print("FAILED to remove channel birthday.")
             return
 
         self._write_to_channel_file()
 
         print("SUCCEEDED to remove channel birthday.")
+
+    def get_message_birthdays(self):
+        if not os.path.exists(self.message_birthday_file):
+            util.check_file(self.message_birthday_file)
+            return []
+
+        with open(self.message_birthday_file, 'r') as file:
+            if os.stat(self.message_birthday_file).st_size == 0:
+                return []
+
+            message_birthday_list = []
+            for d in json.load(file):
+                try:
+                    message_birthday_list.append(
+                        message_birthday.MessageBirthday(d[self.json_server_id], d[self.json_birthday_message]))
+                except KeyError:
+                    print("server_id or birthday_message doesnt exist: {}".format(d))
+
+            return message_birthday_list
+
+    def save_message_birthday(self, server_id, birthday_message):
+        self.message_birthdays.append(message_birthday.MessageBirthday(server_id, birthday_message))
+        print("SUCCEEDED to add message birthday.")
+        self._write_to_message_file()
+
+    def remove_message_birthday(self, server_id):
+        try:
+            self.message_birthdays.remove(self.get_message_bd(server_id))
+        except (ValueError, AttributeError):
+            print("FAILED to remove message birthday.")
+            return
+
+        self._write_to_message_file()
+
+        print("SUCCEEDED to remove message birthday.")

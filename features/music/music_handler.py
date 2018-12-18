@@ -8,23 +8,24 @@ import features.music.song
 
 
 class MusicHandler(object):
-    default_volume = 0.25
-
     crab_rave = "D:/Desktop files/Music/Crab Rave Mother 3.mp3"
     deltarune_folder = "D:/Desktop files/Music/HighQualityVideoGameRips/Toby Fox - DELTARUNE Chapter 1 OST"
     hqplaylist_folder = "D:/Desktop files/Music/HighQualityVideoGameRips"
+    hoo = "D:/Desktop files/Music/touhou.mp3"
+    playlist_test = "D:/Desktop files/Music/HighQualityVideoGameRips/Bleeding Ink - Castle Constellations"
 
     def __init__(self, client):
         self.parent_client = client
 
         self.music_repeat = False
-        self.volume = self.default_volume
+        self.volume = self.parent_client.settings.get_default_volume()
 
         # Only one VoiceClient will be available to this bot
         self.vc = None  # Client's VoiceClient
         self.activated_in_channel = None  # Channel
         self.player = None
 
+        self.playlist_name = None
         self.playlist_songs = None
         self.playlist_index = 0
         self.current_song = None  # Will be the Song class
@@ -48,7 +49,7 @@ class MusicHandler(object):
 
             if self.player.is_done():
                 if self.music_repeat:
-                    await self.make_player(self.current_song.file_location)
+                    await self.make_player(self.current_song)
                 elif self.playlist_songs is not None:
                     if len(self.playlist_songs) - 1 > self.playlist_index:
                         await self.next()
@@ -67,6 +68,7 @@ class MusicHandler(object):
         self.activated_in_channel = None
         self.player = None
 
+        self.playlist_name = None
         self.playlist_songs = None
         self.playlist_index = 0
         self.current_song = None
@@ -98,14 +100,26 @@ class MusicHandler(object):
             self.set_multi_folder_playlist(self.hqplaylist_folder)
             await self.make_voice_client(message)
             await self.make_player(self.playlist_songs[self.playlist_index])
+        elif music_option == "playlisttest":
+            await self.send_message_check(message.channel, "Loading playlist.")
+            self.set_playlist(self.playlist_test)
+            await self.make_voice_client(message)
+            await self.make_player(self.playlist_songs[self.playlist_index])
         elif music_option == 'crab':
             await self.send_message_check(message.channel, "Loading song.")
             await self.make_voice_client(message)
             await self.make_player(features.music.song.Song(self.crab_rave))
+        elif music_option == 'touhou':
+            await self.send_message_check(message.channel, "Loading song.")
+            await self.make_voice_client(message)
+            await self.make_player(features.music.song.Song(self.hoo))
         else:
             await self.send_message_check(message.channel,
                                           "'crab' plays the Crab Rave Mother 3 rip. 'deltarune' plays the entire OST. "
                                           "'hqplaylist' plays D'Agostinateur Woh's entire playlist.")
+            return
+
+        self.playlist_name = music_option
 
     def resume(self):
         if self.player is not None:
@@ -129,7 +143,7 @@ class MusicHandler(object):
 
     async def next(self):
         self.player.stop()
-        if self.playlist_index > len(self.playlist_songs) - 1:
+        if self.playlist_index >= len(self.playlist_songs) - 1:
             await self.send_message_check(self.activated_in_channel, "Playlist ended.")
             await self.leave_vc()
             return
@@ -145,6 +159,7 @@ class MusicHandler(object):
 
     def set_volume(self, vol):
         self.volume = vol
+        self.parent_client.settings.save_user_defaults(volume=vol)
         if self.player is not None:
             self.player.volume = vol
 
@@ -157,21 +172,111 @@ class MusicHandler(object):
         else:
             return "Loop disabled."
 
-    def player_info(self):
-        total_songs = 0
-        position = 0
+    @staticmethod
+    def make_song_line(position, song_name, length):
+        return "`{}. {} | {}`\n\n".format(position, song_name, length)
 
-        if self.playlist_songs is None:
-            if self.current_song is not None:
-                total_songs = 1
-                position = 1
+    @staticmethod
+    def make_current_song_line(position, song_name, length):
+        return "**{}.** **{} | {}**\n\n".format(position, song_name, length)
+
+    @staticmethod
+    def make_arrow_line(point_option):
+        if point_option == "previous":
+            return "⬆️__Previous__⬆️\n\n"
+        elif point_option == "next":
+            return "⬇️__Next__⬇️\n\n"
         else:
-            total_songs = len(self.playlist_songs)
-            position = self.playlist_index + 1
+            return "'{}' isn't a pointing option\n\n".format(point_option)
 
-        return "Will loop: {}\nTotal Songs: {}\nCurrent position: {}".format(self.music_repeat, total_songs, position)
+    @staticmethod
+    def make_length_line(playlist):
+        total_songs = len(playlist)
+        total_length = 0
+        for song in playlist:
+            total_length += song.get_duration()
 
-    def song_info(self):
+        return "\n**{} songs in playlist | {} total length**".format(total_songs, util.format_duration(total_length))
+
+    # def get_line(self, i):
+    #     song = None
+    #     counter = self.playlist_index + i
+    #     adjusted_max = 0
+    #     if -4 == i:
+    #         adjusted_max = 1
+    #     elif -3 == i:
+    #         adjusted_max = 2
+    #     elif -2 == i:
+    #         adjusted_max = 3
+    #     elif -1 == i:
+    #         adjusted_max = 4
+    #
+    #     adjusted_index = 0
+    #     while True:
+    #         if counter < 0 + adjusted_max:
+    #             counter += 1
+    #         else:
+    #             adjusted_index = counter
+    #             break
+    #
+    #     while True:
+    #         try:
+    #             song = self.playlist_songs[self.playlist_index + adjusted_index]
+    #             break
+    #         except IndexError:
+    #             adjusted_index -= 1
+    #
+    #     if self.playlist_index + adjusted_index == 0:
+    #         return [self.make_arrow_line("next"),
+    #                 self.make_current_song_line(self.playlist_index + adjusted_index + 1, song.get_info(
+    #                     features.music.song.Song.TITLE), util.format_duration(song.get_duration()))]
+    #     elif self.playlist_index + adjusted_index == len(self.playlist_songs) - 1:
+    #         return [self.make_current_song_line(self.playlist_index + adjusted_index + 1, song.get_info(
+    #             features.music.song.Song.TITLE), util.format_duration(song.get_duration())),
+    #                 self.make_arrow_line("previous")]
+    #     elif
+
+    # def get_queue_song_lines(self):
+    #     pass
+        # if self.playlist_index == 0:
+        #     for i in range(range_adjustments):
+        #         if i == 0:
+        #             song_lines += self.make_current_song_line(self.playlist_index + 1, self.current_song.get_info(
+        #                 features.music.song.Song.TITLE), util.format_duration(self.current_song.get_duration()))
+        #             song_lines += self.make_arrow_line("next")
+        #         else:
+        #             song = self.playlist_songs[self.playlist_index + i]
+        #             song_lines += self.make_song_line(self.playlist_index + i + 1, song.get_info(
+        #                 features.music.song.Song.TITLE), util.format_duration(song.get_duration()))
+        #
+        # elif self.playlist_index == len(self.playlist_songs) - 1:
+        #     for i in range(range_adjustments):
+        #         if i == range_adjustments - 1:
+        #             song_lines += self.make_arrow_line("previous")
+        #             song_lines += self.make_current_song_line(self.playlist_index + 1, self.current_song.get_info(
+        #                 features.music.song.Song.TITLE), util.format_duration(self.current_song.get_duration()))
+        #         else:
+        #             song = self.playlist_songs[self.playlist_index - range_adjustments + i + 1]
+        #             song_lines += self.make_song_line(self.playlist_index - range_adjustments + i + 2, song.get_info(
+        #                 features.music.song.Song.TITLE), util.format_duration(song.get_duration()))
+
+    # def get_queue_embed(self):
+    #     song_lines = []
+    #
+    #     for i in range(-5, 6):
+    #         line = self.get_line(i)
+    #         if
+    #
+    #     song_lines.append(self.make_length_line(self.playlist_songs))
+    #
+    #     text = ""
+    #     for line in song_lines:
+    #         text += line
+    #
+    #     return util.make_embed(util.colour_musical, text,
+    #                            "Playlist '{}'".format(self.playlist_name), util.image_music_note, None)
+
+    def get_song_info(self):
         title = "N/A"
         artist = "N/A"
         duration = "N/A"

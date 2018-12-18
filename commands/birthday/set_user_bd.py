@@ -9,7 +9,7 @@ class SetUserBD(command_template.Command):
         super(SetUserBD, self).__init__(client)
 
         self.enabled = True
-        self.perm_level = self.permission_everyone
+        self.perm_level = self.permission_levels["everyone"]
         self.cmd_name = "setuserbd"
         self.arguments = "(MM-DD)"
         self.help_description = "Sets the birthday of the user. It will ping them on their birthday in this server. " \

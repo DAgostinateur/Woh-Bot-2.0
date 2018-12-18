@@ -8,7 +8,7 @@ class Leave(command_template.Command):
         super(Leave, self).__init__(client)
 
         self.enabled = True
-        self.perm_level = self.permission_everyone
+        self.perm_level = self.permission_levels["everyone"]
         self.cmd_name = "leave"
         self.arguments = ""
         self.help_description = "Leaves the voice chat."

@@ -86,3 +86,6 @@ class UserBirthday:
             day = str(day) + "th"
 
         return day
+
+    def get_readable_date(self):
+        return "{} {}, {}".format(self.get_readable_month(), self.get_readable_day(), self.current_year)

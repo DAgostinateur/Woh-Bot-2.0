@@ -9,7 +9,7 @@ class SetNotifTime(command_template.Command):
         super(SetNotifTime, self).__init__(client)
 
         self.enabled = True
-        self.perm_level = self.permission_owner
+        self.perm_level = self.permission_levels["owner"]
         self.cmd_name = "setnotiftime"
         self.arguments = "(hour)"
         self.help_description = "Sets the time when the bot will send birthday messages. (hour) is the hour in the " \

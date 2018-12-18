@@ -8,7 +8,7 @@ class Resume(command_template.Command):
         super(Resume, self).__init__(client)
 
         self.enabled = True
-        self.perm_level = self.permission_everyone
+        self.perm_level = self.permission_levels["everyone"]
         self.cmd_name = "resume"
         self.arguments = ""
         self.help_description = "Resumes the song."

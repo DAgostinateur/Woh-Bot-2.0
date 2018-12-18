@@ -5,20 +5,13 @@ import util
 
 
 class Command(object):
-    permission_none = 0  # Command access: Nobody
-    permission_everyone = 1  # Command access: Everyone
-    permission_admin = 2  # Command access: Admin Users (made admin by me) and me
-    permission_owner = 3  # Command access: Me
-
-    colour_royal_purple = 7885225
-    colour_birthday = 16428082
-    colour_admin = 27476
+    permission_levels = {"none": 0, "everyone": 1, "admin": 2, "owner": 3}
 
     def __init__(self, handler):
         self.handler = handler
 
         self.enabled = False
-        self.perm_level = self.permission_none
+        self.perm_level = self.permission_levels["none"]
         self.cmd_name = ""
         self.arguments = ""
         self.option_letters = ""  # Example: w!listuserbd -da
@@ -36,14 +29,11 @@ class Command(object):
 
     def get_help_embedded(self):
         title = "Command Name: {}".format(self.cmd_name.upper())
-        description = "\nState: {}\nPermission Level: {}\nUse: {}{} {}\n\n{}".format(self.get_state_name(),
-                                                                                     self.get_permission_name(
-                                                                                         self.perm_level),
-                                                                                     self.parent_client.prefix,
-                                                                                     self.cmd_name,
-                                                                                     self.arguments,
-                                                                                     self.help_description)
-        return discord.Embed(title=title, description=description, colour=self.colour_royal_purple)
+        description = "\nState: {}\nPermission Level: {}\n" \
+                      "Use: {}{} {}\n\n{}".format(self.get_state_name(), self.get_permission_name(self.perm_level),
+                                                  self.parent_client.prefix, self.cmd_name, self.arguments,
+                                                  self.help_description)
+        return discord.Embed(title=title, description=description, colour=util.colour_royal_purple)
 
     def get_help_inline(self):
         return {"name": "{} - {} - {}{} {}".format(self.get_state_name(), self.get_permission_name(self.perm_level),
@@ -54,13 +44,13 @@ class Command(object):
         return message.content[len(self.parent_client.prefix + self.cmd_name):].lstrip()
 
     def get_permission_name(self, perms):
-        if perms == self.permission_none:
+        if perms == self.permission_levels["none"]:
             return "No one"
-        elif perms == self.permission_everyone:
+        elif perms == self.permission_levels["everyone"]:
             return "Everyone"
-        elif perms == self.permission_admin:
+        elif perms == self.permission_levels["admin"]:
             return "Admin"
-        elif perms == self.permission_owner:
+        elif perms == self.permission_levels["owner"]:
             return "Bot Owner"
         else:
             return "Perms broken"
@@ -72,13 +62,13 @@ class Command(object):
             return "Disabled"
 
     def has_permission(self, perms, user_id, server_id):
-        if perms == self.permission_none:
+        if perms == self.permission_levels["none"]:
             return False
-        elif perms == self.permission_everyone:
+        elif perms == self.permission_levels["everyone"]:
             return True
-        elif perms == self.permission_admin:
+        elif perms == self.permission_levels["admin"]:
             return self.parent_client.admin_handler.is_user_admin(user_id, server_id) or util.is_owner(user_id)
-        elif perms == self.permission_owner:
+        elif perms == self.permission_levels["owner"]:
             return util.is_owner(user_id)
         return False
 

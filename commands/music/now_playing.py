@@ -8,7 +8,7 @@ class NowPlaying(command_template.Command):
         super(NowPlaying, self).__init__(client)
 
         self.enabled = True
-        self.perm_level = self.permission_everyone
+        self.perm_level = self.permission_levels["everyone"]
         self.cmd_name = "np"
         self.arguments = ""
         self.help_description = "Displays info about the currently playing song."
@@ -17,4 +17,4 @@ class NowPlaying(command_template.Command):
         if not self.execute_cmd(message):
             return
 
-        await self.send_message_check(message.channel, self.parent_client.music_handler.song_info())
+        await self.send_message_check(message.channel, self.parent_client.music_handler.get_song_info())

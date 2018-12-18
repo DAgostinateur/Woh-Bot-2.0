@@ -4,9 +4,10 @@ import re
 import wohbot2
 
 from commands.admin import list_user_admin, add_user_admin, rm_user_admin
-from commands.birthday import set_channel_bd, show_channel_bd, set_user_bd, set_notif_time, list_user_bd
+from commands.birthday import (set_channel_bd, show_channel_bd, set_user_bd, set_notif_time, list_user_bd,
+                               manual_bd_check, show_message_bd, set_message_bd)
 from commands.cant_be_disabled import disable, enable, help
-from commands.music import play, leave, repeat, now_playing, playerinfo, resume, pause, volume, next, previous
+from commands.music import play, leave, repeat, now_playing, resume, pause, volume, next, previous, queue
 from commands import set_presence
 
 
@@ -64,12 +65,14 @@ class CommandHandler(object):
 
     def get_commands(self):
         return [set_presence.SetPresence(self), disable.Disable(self), enable.Enable(self),
-                set_notif_time.SetNotifTime(self), add_user_admin.AddUserAdmin(self), rm_user_admin.RmUserAdmin(self),
+                manual_bd_check.ManualBDCheck(self), set_notif_time.SetNotifTime(self),
+                add_user_admin.AddUserAdmin(self), rm_user_admin.RmUserAdmin(self),
+                set_message_bd.SetMessageBD(self), show_message_bd.ShowMessageBD(self),
                 set_channel_bd.SetChannelBD(self), show_channel_bd.ShowChannelBD(self),
                 list_user_admin.ListUserAdmin(self), list_user_bd.ListUserBD(self), set_user_bd.SetUserBD(self),
                 play.Play(self), leave.Leave(self), resume.Resume(self), pause.Pause(self),
-                now_playing.NowPlaying(self), playerinfo.PlayerInfo(self), repeat.Repeat(self), volume.Volume(self),
-                previous.Previous(self), next.Next(self), help.Help(self)]
+                now_playing.NowPlaying(self), repeat.Repeat(self), volume.Volume(self), previous.Previous(self),
+                next.Next(self), queue.Queue(self), help.Help(self)]
 
     async def check_message(self, message: discord.Message):
         for cmd in self.commands:

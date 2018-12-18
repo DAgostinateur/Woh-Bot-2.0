@@ -6,6 +6,42 @@ import string
 import hidden
 
 
+colour_musical = 6139885
+colour_royal_purple = 7885225
+colour_birthday = 16428082
+colour_admin = 27476
+
+image_confetti = "https://emojipedia-us.s3.dualstack.us-west-1." \
+                 "amazonaws.com/thumbs/120/twitter/154/confetti-ball_1f38a.png"
+image_lock = "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/twitter/154/lock_1f512.png"
+image_question_mark = "https://emojipedia-us.s3.dualstack.us-west-1." \
+                      "amazonaws.com/thumbs/120/twitter/154/white-question-mark-ornament_2754.png"
+image_music_note = "https://emojipedia-us.s3.dualstack.us-west-1." \
+                   "amazonaws.com/thumbs/120/twitter/154/multiple-musical-notes_1f3b6.png"
+
+
+def make_embed(colour, description, author_name, author_icon_url, thumbnail_url, footer_text, fields):
+    embed = discord.Embed(colour=colour, description=description)
+    if author_icon_url is None:
+        embed.set_author(name=author_name)
+    else:
+        embed.set_author(name=author_name,
+                         icon_url=author_icon_url)
+
+    if thumbnail_url is not None:
+        embed.set_thumbnail(url=thumbnail_url)
+
+    if footer_text is not None:
+        embed.set_footer(text=footer_text)
+
+    if fields is not None:
+        for field in fields:
+            embed.add_field(name=field["name"],
+                            value=field["value"], inline=field["inline"])
+
+    return embed
+
+
 def code_format(code_header, content):
     return "```{}\n{}```".format(code_header, content)
 

@@ -14,12 +14,14 @@ import util
 
 
 # TODO:
+# Figure out how to do the queue command, this is so difficult.
+# Aliases for commands.
 # Flatter code.
 # Remake the help command, there's too many commands displayed, drowns the channel.
 # Better way to load commands.
 # Set different prefixes for servers.
 # Proper Logging.
-# Control Terraria Server or GMod, basically finish what I started with the first bot.
+# Control any self hosted servers, basically finish what I started with the first bot.
 
 
 class WohBot(discord.Client):
@@ -28,7 +30,7 @@ class WohBot(discord.Client):
     def __init__(self):
         super(WohBot, self).__init__()
 
-        self.version = "2.0.9"
+        self.version = "2.0.95"
 
         util.check_folder(self.data_folder)
 
@@ -44,7 +46,7 @@ class WohBot(discord.Client):
         self.command_handler = command_handler.CommandHandler(self)
         self.ping_for_help = ping_for_help.PingForHelp(self)  # This needs a better name
 
-        self.loop.create_task(self.birthday_handler.happy_birthday_checker())
+        self.loop.create_task(self.birthday_handler.birthday_timer())
         self.loop.create_task(self.music_handler.disconnect_timer())
 
     async def _get_client_owner(self):

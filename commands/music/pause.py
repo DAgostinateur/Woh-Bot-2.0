@@ -8,7 +8,7 @@ class Pause(command_template.Command):
         super(Pause, self).__init__(client)
 
         self.enabled = True
-        self.perm_level = self.permission_everyone
+        self.perm_level = self.permission_levels["everyone"]
         self.cmd_name = "pause"
         self.arguments = ""
         self.help_description = "Pauses the song."

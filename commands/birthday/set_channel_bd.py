@@ -10,7 +10,7 @@ class SetChannelBD(command_template.Command):
         super(SetChannelBD, self).__init__(client)
 
         self.enabled = True
-        self.perm_level = self.permission_admin
+        self.perm_level = self.permission_levels["admin"]
         self.cmd_name = "setchannelbd"
         self.arguments = "(channel)"
         self.help_description = "Sets the channel used for birthday messages. Putting nothing in (channel) removes it."
@@ -25,6 +25,9 @@ class SetChannelBD(command_template.Command):
             if message.server.get_channel(channel_id) is None:
                 await self.send_message_check(message.channel, "Invalid channel.")
             else:
+                if self.parent_client.birthday_handler.get_channel_bd(message.server.id) is not None:
+                    self.parent_client.birthday_handler.remove_channel_birthday(message.server.id)
+
                 self.parent_client.birthday_handler.save_channel_birthday(channel_id, message.server.id)
                 await self.send_message_check(message.channel, "Birthday channel changed to {}!".format(
                     util.channel_format(channel_id)))

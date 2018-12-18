@@ -8,7 +8,7 @@ class Play(command_template.Command):
         super(Play, self).__init__(client)
 
         self.enabled = True
-        self.perm_level = self.permission_everyone
+        self.perm_level = self.permission_levels["everyone"]
         self.cmd_name = "play"
         self.arguments = "[song/playlist]"
         self.help_description = "'crab' plays the Crab Rave Mother 3 rip. 'deltarune' plays the entire OST. " \

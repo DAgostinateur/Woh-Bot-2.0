@@ -9,7 +9,7 @@ class Volume(command_template.Command):
         super(Volume, self).__init__(client)
 
         self.enabled = True
-        self.perm_level = self.permission_everyone
+        self.perm_level = self.permission_levels["everyone"]
         self.cmd_name = "volume"
         self.arguments = "(number)"
         self.help_description = "Sets the volume for the bot. Between 0 and 100, nothing puts it back to default."
@@ -22,7 +22,7 @@ class Volume(command_template.Command):
 
         if len(number) == 0:
             output_text = "Volume back to default. " + self.parent_client.music_handler.set_volume(
-                self.parent_client.music_handler.default_volume)
+                self.parent_client.settings.default_bot_volume)
             await self.send_message_check(message.channel, output_text)
             return
 

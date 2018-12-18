@@ -9,7 +9,7 @@ class ListUserAdmin(command_template.Command):
         super(ListUserAdmin, self).__init__(client)
 
         self.enabled = True
-        self.perm_level = self.permission_admin
+        self.perm_level = self.permission_levels["admin"]
         self.cmd_name = "listuseradmin"
         self.arguments = "(-c)"
         self.option_letters = "c"
@@ -19,18 +19,6 @@ class ListUserAdmin(command_template.Command):
     @staticmethod
     def make_field(member):
         return {"name": member.name, "inline": "true", "value": "User Id: {}".format(member.id)}
-
-    def make_embed(self, description, fields):
-        embed = discord.Embed(colour=self.colour_admin, description=description)
-        embed.set_author(name="Admin List",
-                         icon_url="https://emojipedia-us.s3.dualstack.us-west-1."
-                                  "amazonaws.com/thumbs/120/twitter/154/lock_1f512.png")
-
-        if fields is not None:
-            for field in fields:
-                embed.add_field(name=field["name"], value=field["value"])
-
-        return embed
 
     def get_count_description(self, message: discord.Message):
         return "There's {} members in the admin list in this server".format(
@@ -51,13 +39,16 @@ class ListUserAdmin(command_template.Command):
         description = ""
 
         if len(self.get_admin_inlines(message)) == 0:
-            embeds.append(self.make_embed("No one is in this list!", None))
+            embeds.append(
+                util.make_embed(util.colour_admin, "No one is in this list!", "Admin List", util.image_lock, None,
+                                None, None))
 
         if self.has_wanted_argument(message, "c"):
             description = self.get_count_description(message)
 
         for fields in util.split_list(self.get_admin_inlines(message), 25):
-            embeds.append(self.make_embed(description, fields))
+            embeds.append(
+                util.make_embed(util.colour_admin, description, "Admin List", util.image_lock, None, None, fields))
 
         return embeds
 

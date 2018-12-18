@@ -9,7 +9,7 @@ class RmUserAdmin(command_template.Command):
         super(RmUserAdmin, self).__init__(client)
 
         self.enabled = True
-        self.perm_level = self.permission_owner
+        self.perm_level = self.permission_levels["owner"]
         self.cmd_name = "rmuseradmin"
         self.arguments = "[user]"
         self.help_description = "Removes the user as an admin for this bot. " \

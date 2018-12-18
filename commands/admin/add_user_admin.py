@@ -9,7 +9,7 @@ class AddUserAdmin(command_template.Command):
         super(AddUserAdmin, self).__init__(client)
 
         self.enabled = True
-        self.perm_level = self.permission_owner
+        self.perm_level = self.permission_levels["owner"]
         self.cmd_name = "adduseradmin"
         self.arguments = "[user]"
         self.help_description = "Adds the user as an admin for this bot. " \

@@ -10,7 +10,7 @@ class ListUserBD(command_template.Command):
         super(ListUserBD, self).__init__(client)
 
         self.enabled = True
-        self.perm_level = self.permission_everyone
+        self.perm_level = self.permission_levels["everyone"]
         self.cmd_name = "listuserbd"
         self.arguments = "(-a/c/d)"
         self.option_letters = "acd"
@@ -30,18 +30,6 @@ class ListUserBD(command_template.Command):
     @staticmethod
     def make_field(member, value):
         return {"name": member.name, "inline": "true", "value": value}
-
-    def make_embed(self, description, fields):
-        embed = discord.Embed(colour=self.colour_birthday, description=description)
-        embed.set_author(name="Birthday List",
-                         icon_url="https://emojipedia-us.s3.dualstack.us-west-1."
-                                  "amazonaws.com/thumbs/120/twitter/154/confetti-ball_1f38a.png")
-
-        if fields is not None:
-            for field in fields:
-                embed.add_field(name=field["name"], value=field["value"], inline=field["inline"])
-
-        return embed
 
     def get_count_description(self, message: discord.Message):
         return "There's {} members in the birthday list in this server".format(
@@ -82,13 +70,17 @@ class ListUserBD(command_template.Command):
         description = ""
 
         if len(self.get_birthday_inlines(message)) == 0:
-            embeds.append(self.make_embed("No one is in this list!", None))
+            embeds.append(
+                util.make_embed(util.colour_birthday, "No one is in this list!",
+                                "Birthday List", util.image_confetti, None, None, None))
 
         if self.has_wanted_argument(message, "c"):
             description = self.get_count_description(message)
 
         for fields in util.split_list(self.get_birthday_inlines(message), 25):
-            embeds.append(self.make_embed(description, fields))
+            embeds.append(
+                util.make_embed(util.colour_birthday, description, "Birthday List", util.image_confetti, None, None,
+                                fields))
 
         return embeds
 
