@@ -40,15 +40,16 @@ class ListUserAdmin(command_template.Command):
 
         if len(self.get_admin_inlines(message)) == 0:
             embeds.append(
-                util.make_embed(util.colour_admin, "No one is in this list!", "Admin List", util.image_lock, None,
-                                None, None))
+                util.make_embed(colour=util.colour_admin, description="No one is in this list!",
+                                author_name="Admin List", author_icon_url=util.image_lock))
 
         if self.has_wanted_argument(message, "c"):
             description = self.get_count_description(message)
 
         for fields in util.split_list(self.get_admin_inlines(message), 25):
             embeds.append(
-                util.make_embed(util.colour_admin, description, "Admin List", util.image_lock, None, None, fields))
+                util.make_embed(colour=util.colour_admin, description=description, author_name="Admin List",
+                                author_icon_url=util.image_lock, fields=fields))
 
         return embeds
 

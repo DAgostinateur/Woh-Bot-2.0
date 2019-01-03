@@ -8,15 +8,20 @@ import features.music.song
 
 
 class MusicHandler(object):
-    crab_rave = "D:/Desktop files/Music/Crab Rave Mother 3.mp3"
-    deltarune_folder = "D:/Desktop files/Music/HighQualityVideoGameRips/Toby Fox - DELTARUNE Chapter 1 OST"
-    hqplaylist_folder = "D:/Desktop files/Music/HighQualityVideoGameRips"
-    hoo = "D:/Desktop files/Music/touhou.mp3"
-    playlist_test = "D:/Desktop files/Music/HighQualityVideoGameRips/Bleeding Ink - Castle Constellations"
+    music_folder = "data/music"
+    queue_half_length = 5
+    # Add music in the correct locations
+    music_playlist_paths = {"hqplaylist": os.path.join(music_folder, "hqplaylist"),
+                            "deltarune": os.path.join(music_folder, "deltarune"),
+                            "playlisttest": os.path.join(music_folder, "castle_constellations")}
 
     def __init__(self, client):
         self.parent_client = client
 
+        util.check_folder(self.music_folder)
+        self.music_playlist_paths = None
+
+        self.alone_counter = 0  # 1=4 seconds 150=600seconds=10minutes
         self.music_repeat = False
         self.volume = self.parent_client.settings.get_default_volume()
 
@@ -47,17 +52,29 @@ class MusicHandler(object):
             if self.player is None:
                 continue
 
-            if self.player.is_done():
-                if self.music_repeat:
-                    await self.make_player(self.current_song)
-                elif self.playlist_songs is not None:
-                    if len(self.playlist_songs) - 1 > self.playlist_index:
-                        await self.next()
-                    else:
-                        await self.send_message_check(self.activated_in_channel, "Playlist ended.")
-                        await self.leave_vc()
-                else:
+            if len(self.vc.channel.voice_members) <= 1:
+                print(self.alone_counter)
+                if self.alone_counter == 150:
+                    self.alone_counter = 0
                     await self.leave_vc()
+                    continue
+                self.alone_counter += 1
+
+            if not self.player.is_done():
+                continue
+
+            if self.music_repeat:
+                await self.make_player(self.current_song)
+            elif self.playlist_songs is not None:
+                if len(self.playlist_songs) - 1 > self.playlist_index:
+                    await self.next()
+                else:
+                    await self.send_message_check(self.activated_in_channel, "Playlist ended.")
+                    await self.leave_vc()
+            else:
+                await self.send_message_check(self.activated_in_channel,
+                                              "Nobody hsa been in this voice channel for 10 minutes, bi bye.")
+                await self.leave_vc()
 
     def is_in_vc(self, message: discord.Message):
         # Both the person that did the command and the bot
@@ -88,37 +105,25 @@ class MusicHandler(object):
         self.player.start()
 
     async def play(self, message: discord.Message, music_option):
-        # Return is the text output to send in chat
         # Check with is_in_vc before coming here
-        if music_option == "deltarune":
-            await self.send_message_check(message.channel, "Loading playlist.")
-            self.set_playlist(self.deltarune_folder)
-            await self.make_voice_client(message)
-            await self.make_player(self.playlist_songs[self.playlist_index])
-        elif music_option == "hqplaylist":
-            await self.send_message_check(message.channel, "Loading playlist.")
-            self.set_multi_folder_playlist(self.hqplaylist_folder)
-            await self.make_voice_client(message)
-            await self.make_player(self.playlist_songs[self.playlist_index])
-        elif music_option == "playlisttest":
-            await self.send_message_check(message.channel, "Loading playlist.")
-            self.set_playlist(self.playlist_test)
-            await self.make_voice_client(message)
-            await self.make_player(self.playlist_songs[self.playlist_index])
-        elif music_option == 'crab':
-            await self.send_message_check(message.channel, "Loading song.")
-            await self.make_voice_client(message)
-            await self.make_player(features.music.song.Song(self.crab_rave))
-        elif music_option == 'touhou':
-            await self.send_message_check(message.channel, "Loading song.")
-            await self.make_voice_client(message)
-            await self.make_player(features.music.song.Song(self.hoo))
-        else:
+        try:
+            playlist = self.music_playlist_paths[music_option]
+        except KeyError:
             await self.send_message_check(message.channel,
-                                          "'crab' plays the Crab Rave Mother 3 rip. 'deltarune' plays the entire OST. "
+                                          "'deltarune' plays the entire OST. "
                                           "'hqplaylist' plays D'Agostinateur Woh's entire playlist.")
             return
 
+        await self.send_message_check(message.channel, "Loading playlist.")
+        util.check_folder(playlist)
+        self.set_playlist(playlist)
+        if len(self.playlist_songs) == 0:
+            self.playlist_songs = None
+            await self.send_message_check(message.channel, "Folder '{}' is empty.".format(playlist))
+            return
+
+        await self.make_voice_client(message)
+        await self.make_player(self.playlist_songs[self.playlist_index])
         self.playlist_name = music_option
 
     def resume(self):
@@ -198,6 +203,14 @@ class MusicHandler(object):
 
         return "\n**{} songs in playlist | {} total length**".format(total_songs, util.format_duration(total_length))
 
+    def get_lines(self):
+        next_offset = 0
+
+        # if len(self.playlist_songs) < 11:
+        #
+        #
+        # for i in range
+
     # def get_line(self, i):
     #     song = None
     #     counter = self.playlist_index + i
@@ -237,28 +250,28 @@ class MusicHandler(object):
     #     elif
 
     # def get_queue_song_lines(self):
-    #     pass
-        # if self.playlist_index == 0:
-        #     for i in range(range_adjustments):
-        #         if i == 0:
-        #             song_lines += self.make_current_song_line(self.playlist_index + 1, self.current_song.get_info(
-        #                 features.music.song.Song.TITLE), util.format_duration(self.current_song.get_duration()))
-        #             song_lines += self.make_arrow_line("next")
-        #         else:
-        #             song = self.playlist_songs[self.playlist_index + i]
-        #             song_lines += self.make_song_line(self.playlist_index + i + 1, song.get_info(
-        #                 features.music.song.Song.TITLE), util.format_duration(song.get_duration()))
-        #
-        # elif self.playlist_index == len(self.playlist_songs) - 1:
-        #     for i in range(range_adjustments):
-        #         if i == range_adjustments - 1:
-        #             song_lines += self.make_arrow_line("previous")
-        #             song_lines += self.make_current_song_line(self.playlist_index + 1, self.current_song.get_info(
-        #                 features.music.song.Song.TITLE), util.format_duration(self.current_song.get_duration()))
-        #         else:
-        #             song = self.playlist_songs[self.playlist_index - range_adjustments + i + 1]
-        #             song_lines += self.make_song_line(self.playlist_index - range_adjustments + i + 2, song.get_info(
-        #                 features.music.song.Song.TITLE), util.format_duration(song.get_duration()))
+    #
+    # if self.playlist_index == 0:
+    #     for i in range(range_adjustments):
+    #         if i == 0:
+    #             song_lines += self.make_current_song_line(self.playlist_index + 1, self.current_song.get_info(
+    #                 features.music.song.Song.TITLE), util.format_duration(self.current_song.get_duration()))
+    #             song_lines += self.make_arrow_line("next")
+    #         else:
+    #             song = self.playlist_songs[self.playlist_index + i]
+    #             song_lines += self.make_song_line(self.playlist_index + i + 1, song.get_info(
+    #                 features.music.song.Song.TITLE), util.format_duration(song.get_duration()))
+    #
+    # elif self.playlist_index == len(self.playlist_songs) - 1:
+    #     for i in range(range_adjustments):
+    #         if i == range_adjustments - 1:
+    #             song_lines += self.make_arrow_line("previous")
+    #             song_lines += self.make_current_song_line(self.playlist_index + 1, self.current_song.get_info(
+    #                 features.music.song.Song.TITLE), util.format_duration(self.current_song.get_duration()))
+    #         else:
+    #             song = self.playlist_songs[self.playlist_index - range_adjustments + i + 1]
+    #             song_lines += self.make_song_line(self.playlist_index - range_adjustments + i + 2, song.get_info(
+    #                 features.music.song.Song.TITLE), util.format_duration(song.get_duration()))
 
     # def get_queue_embed(self):
     #     song_lines = []
@@ -276,30 +289,30 @@ class MusicHandler(object):
     #     return util.make_embed(util.colour_musical, text,
     #                            "Playlist '{}'".format(self.playlist_name), util.image_music_note, None)
 
-    def get_song_info(self):
+    def get_now_playing_embed(self):
         title = "N/A"
         artist = "N/A"
         duration = "N/A"
+        length_line = ""
 
         if self.current_song is not None:
             title = self.current_song.get_info(features.music.song.Song.TITLE)
             artist = self.current_song.get_info(features.music.song.Song.ARTIST)
             duration = util.format_duration(self.current_song.get_duration())
 
-        return "\nTitle: {}\nArtist: {}\nDuration: {}".format(title, artist, duration)
+        if self.playlist_songs is not None:
+            length_line = self.make_length_line(self.playlist_songs)
 
-    def set_multi_folder_playlist(self, double_layer_folder):
-        self.playlist_songs = []
-        for folder in os.listdir(double_layer_folder):
-            if os.path.isdir(os.path.join(double_layer_folder, folder)):
-                for file in os.listdir(os.path.join(double_layer_folder, folder)):
-                    if util.is_music_file(os.path.join(double_layer_folder, folder, file)):
-                        song = features.music.song.Song(os.path.join(double_layer_folder, folder, file))
-                        self.playlist_songs.append(song)
-        random.shuffle(self.playlist_songs)
+        return util.make_embed(colour=util.colour_musical, author_name="Now Playing",
+                               author_icon_url=util.image_music_note,
+                               description="Title: {}\nArtist: {}\nDuration: {}{}".format(title, artist, duration,
+                                                                                          length_line))
 
     def set_playlist(self, simple_folder):
         self.playlist_songs = []
+        if not os.path.isdir(os.path.join(simple_folder)):
+            return
+
         for file in os.listdir(simple_folder):
             if util.is_music_file(os.path.join(simple_folder, file)):
                 song = features.music.song.Song(os.path.join(simple_folder, file))

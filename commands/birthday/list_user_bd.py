@@ -71,16 +71,16 @@ class ListUserBD(command_template.Command):
 
         if len(self.get_birthday_inlines(message)) == 0:
             embeds.append(
-                util.make_embed(util.colour_birthday, "No one is in this list!",
-                                "Birthday List", util.image_confetti, None, None, None))
+                util.make_embed(colour=util.colour_birthday, description="No one is in this list!",
+                                author_name="Birthday List", author_icon_url=util.image_confetti))
 
         if self.has_wanted_argument(message, "c"):
             description = self.get_count_description(message)
 
         for fields in util.split_list(self.get_birthday_inlines(message), 25):
             embeds.append(
-                util.make_embed(util.colour_birthday, description, "Birthday List", util.image_confetti, None, None,
-                                fields))
+                util.make_embed(colour=util.colour_birthday, description=description, author_name="Birthday List",
+                                author_icon_url=util.image_confetti, fields=fields))
 
         return embeds
 

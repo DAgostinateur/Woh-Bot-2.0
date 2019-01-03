@@ -20,7 +20,7 @@ class Previous(command_template.Command):
         if self.parent_client.music_handler.is_in_vc(message):
             if self.parent_client.music_handler.playlist_songs is not None:
                 await self.parent_client.music_handler.previous()
-                await self.send_message_check(message.channel, "Previous song.")
+                await self.send_message_check(message.channel, "Previous song!")
             else:
                 await self.send_message_check(message.channel, "There's no playlist on.")
         else:

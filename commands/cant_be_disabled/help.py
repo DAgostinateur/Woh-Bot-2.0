@@ -27,8 +27,8 @@ class Help(command_template.Command):
 
         for fields in util.split_list(self.handler.get_cmd_inlines(), 25):
             embeds.append(
-                util.make_embed(util.colour_royal_purple, description, "Help", util.image_question_mark, None, None,
-                                fields))
+                util.make_embed(colour=util.colour_royal_purple, description=description, author_name="Help",
+                                author_icon_url=util.image_question_mark, fields=fields))
 
         return embeds
 
@@ -36,8 +36,8 @@ class Help(command_template.Command):
         description = "\nUse: {}{} {}\n\n{}".format(self.parent_client.prefix, self.cmd_name, self.arguments,
                                                     self.help_description)
 
-        return util.make_embed(util.colour_royal_purple, description, "Command Name: {}".format(self.cmd_name), None,
-                               None, None, None)
+        return util.make_embed(colour=util.colour_royal_purple, description=description,
+                               author_name="Command Name: {}".format(self.cmd_name))
 
     async def command(self, message: discord.Message):
         if not self.execute_cmd(message):

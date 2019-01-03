@@ -20,7 +20,8 @@ image_music_note = "https://emojipedia-us.s3.dualstack.us-west-1." \
                    "amazonaws.com/thumbs/120/twitter/154/multiple-musical-notes_1f3b6.png"
 
 
-def make_embed(colour, description, author_name, author_icon_url, thumbnail_url, footer_text, fields):
+def make_embed(description, author_name, author_icon_url=None, thumbnail_url=None, footer_text=None, fields=None,
+               colour=colour_royal_purple):
     embed = discord.Embed(colour=colour, description=description)
     if author_icon_url is None:
         embed.set_author(name=author_name)

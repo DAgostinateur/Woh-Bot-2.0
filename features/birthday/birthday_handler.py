@@ -53,8 +53,9 @@ class BirthdayHandler(object):
         author_name = "Happy Birthday {}".format(user.name)
 
         try:
-            embed = util.make_embed(util.colour_birthday, bd_message, author_name, util.image_confetti, user.avatar_url,
-                                    date, None)
+            embed = util.make_embed(colour=util.colour_birthday, description=bd_message, author_name=author_name,
+                                    author_icon_url=util.image_confetti, thumbnail_url=user.avatar_url,
+                                    footer_text=date)
             await self.parent_client.send_message(self.parent_client.get_channel(channel_id), content=user.mention,
                                                   embed=embed)
         except discord.NotFound:

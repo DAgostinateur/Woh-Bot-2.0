@@ -103,9 +103,9 @@ class Command(object):
 
         return True
 
-    async def send_message_check(self, channel: discord.Channel, text):
+    async def send_message_check(self, channel: discord.Channel, text=None, embed=None):
         try:
-            await self.parent_client.send_message(channel, text)
+            await self.parent_client.send_message(channel, content=text, embed=embed)
         except discord.NotFound:
             print("Channel '{}' probably doesn't exist.".format(channel.id))
         except discord.Forbidden:

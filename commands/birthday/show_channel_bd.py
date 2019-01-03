@@ -19,7 +19,7 @@ class ShowChannelBD(command_template.Command):
 
         channel_bd = self.parent_client.birthday_handler.get_channel_bd(message.server.id)
         if channel_bd is None:
-            await self.send_message_check(message.channel, "No birthday channel is set on this server!")
+            await self.send_message_check(message.channel, "No birthday channel is set on this server.")
         else:
             await self.send_message_check(message.channel, "The birthday channel for this server is {}!".format(
                 util.channel_format(channel_bd.channel_id)))

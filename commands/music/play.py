@@ -11,7 +11,7 @@ class Play(command_template.Command):
         self.perm_level = self.permission_levels["everyone"]
         self.cmd_name = "play"
         self.arguments = "[song/playlist]"
-        self.help_description = "'crab' plays the Crab Rave Mother 3 rip. 'deltarune' plays the entire OST. " \
+        self.help_description = "'deltarune' plays the entire OST. " \
                                 "'hqplaylist' plays D'Agostinateur Woh's entire playlist." \
                                 "There might be a 0 (not including 0 Morg) to 4 second delay between songs."
 

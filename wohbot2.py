@@ -30,7 +30,7 @@ class WohBot(discord.Client):
     def __init__(self):
         super(WohBot, self).__init__()
 
-        self.version = "2.0.95"
+        self.version = "2.0.96"
 
         util.check_folder(self.data_folder)
 
@@ -54,7 +54,7 @@ class WohBot(discord.Client):
         self.owner = app_info.owner
 
     async def on_ready(self):
-        self.birthday_handler.check_birthday_lists()
+        # self.birthday_handler.check_birthday_lists()
 
         await client.change_presence(game=discord.Game(name=self.default_presence, type=0))
         await self._get_client_owner()

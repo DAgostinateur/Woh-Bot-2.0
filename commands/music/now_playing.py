@@ -17,4 +17,8 @@ class NowPlaying(command_template.Command):
         if not self.execute_cmd(message):
             return
 
-        await self.send_message_check(message.channel, self.parent_client.music_handler.get_song_info())
+        if self.parent_client.music_handler.is_in_vc(message):
+            await self.parent_client.send_message(message.channel,
+                                                  embed=self.parent_client.music_handler.get_now_playing_embed())
+        else:
+            await self.send_message_check(message.channel, "There's nothing playing.")

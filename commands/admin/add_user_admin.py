@@ -32,7 +32,6 @@ class AddUserAdmin(command_template.Command):
                 self.parent_client.admin_handler.save_user_admin(user_id, message.server.id)
                 user = message.server.get_member(user_id)
 
-                await self.send_message_check(message.channel,
-                                              "Granted admin commands to {}!".format(user.mention))
+                await self.send_message_check(message.channel, "Granted admin commands to {}!".format(user.mention))
         else:
             await self.send_message_check(message.channel, "Invalid user.")
