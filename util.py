@@ -2,6 +2,7 @@ import discord
 import datetime
 import os
 import string
+import pytz
 
 import hidden
 
@@ -63,7 +64,7 @@ def get_custom_emoji(client: discord.Client, name: str):
 
 
 def get_next_day_delta(hour: int):
-    today_n = datetime.datetime.today()
+    today_n = datetime.datetime.now(pytz.timezone('EST'))
     try:
         today_t = today_n.replace(day=today_n.day + 1, hour=hour, minute=0, second=0, microsecond=0)
     except ValueError:

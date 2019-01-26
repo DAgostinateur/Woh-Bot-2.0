@@ -1,6 +1,7 @@
 import discord
 import random
 
+import hidden
 import util
 
 
@@ -32,7 +33,15 @@ class SpecialReactions:
             print("Emoji '{}' doesn't exist.".format(emoji_name))
 
     async def check_message(self, message: discord.Message):
-        if 'woh' in message.content.lower():
+        if message.author.id == hidden.pen_id():
+            for index, emote in enumerate(self.woh_emojis[1:]):
+                if emote in message.content.lower():
+                    await self.react(message, emote)
+                    break
+            else:
+                if 'woh' in message.content.lower():
+                    await self.react(message, 'woh')
+        elif 'woh' in message.content.lower():
             await self.react(message, self.get_random_emoji(self.woh_emojis))
 
         if 'sans' in message.content.lower():

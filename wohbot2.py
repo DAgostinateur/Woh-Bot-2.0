@@ -5,6 +5,7 @@ from datetime import datetime
 
 from features.admin import admin_handler
 from features.birthday import birthday_handler
+# from features.bot_logging import logging_handler
 from features.music import music_handler
 from features import special_reactions, command_handler, ping_for_help
 
@@ -41,6 +42,7 @@ class WohBot(discord.Client):
 
         self.admin_handler = admin_handler.AdminHandler(self)
         self.birthday_handler = birthday_handler.BirthdayHandler(self)
+        # self.logging_handler = logging_handler.LoggingHandler(self)
         self.music_handler = music_handler.MusicHandler(self)
         self.special_reactions = special_reactions.SpecialReactions(self)
         self.command_handler = command_handler.CommandHandler(self)

@@ -1,5 +1,6 @@
 import calendar
 import datetime
+import pytz
 
 
 class UserBirthday:
@@ -13,7 +14,7 @@ class UserBirthday:
 
     @property
     def current_year(self):
-        return datetime.datetime.now().year
+        return datetime.datetime.now(pytz.timezone('EST')).year
 
     def get_astrological_sign(self):
         # Requested by Waffle.
@@ -57,13 +58,15 @@ class UserBirthday:
             return "Astrological sign broken?"
 
     def get_datetime_date(self):
-        if datetime.date(self.current_year, self.get_month_number(), self.get_day_number()) < datetime.date.today():
+        if datetime.datetime(self.current_year, self.get_month_number(),
+                             self.get_day_number()) < datetime.datetime.today():
             return datetime.date(self.current_year + 1, self.get_month_number(), self.get_day_number())
         else:
             return datetime.date(self.current_year, self.get_month_number(), self.get_day_number())
 
     def get_datetime_date_no_adjustment(self):
-        return datetime.date(datetime.datetime.now().year, self.get_month_number(), self.get_day_number())
+        return datetime.date(datetime.datetime.now(pytz.timezone('EST')).year,
+                             self.get_month_number(), self.get_day_number())
 
     def get_month_number(self):
         return int(self.birthday_date[0:2])

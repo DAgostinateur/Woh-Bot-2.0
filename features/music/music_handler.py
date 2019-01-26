@@ -19,7 +19,6 @@ class MusicHandler(object):
         self.parent_client = client
 
         util.check_folder(self.music_folder)
-        self.music_playlist_paths = None
 
         self.alone_counter = 0  # 1=4 seconds 150=600seconds=10minutes
         self.music_repeat = False
@@ -53,7 +52,6 @@ class MusicHandler(object):
                 continue
 
             if len(self.vc.channel.voice_members) <= 1:
-                print(self.alone_counter)
                 if self.alone_counter == 150:
                     self.alone_counter = 0
                     await self.leave_vc()
@@ -107,8 +105,9 @@ class MusicHandler(object):
     async def play(self, message: discord.Message, music_option):
         # Check with is_in_vc before coming here
         try:
+            # Should never be NoneType
             playlist = self.music_playlist_paths[music_option]
-        except KeyError:
+        except (KeyError, TypeError):
             await self.send_message_check(message.channel,
                                           "'deltarune' plays the entire OST. "
                                           "'hqplaylist' plays D'Agostinateur Woh's entire playlist.")
