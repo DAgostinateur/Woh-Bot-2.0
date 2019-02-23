@@ -17,7 +17,7 @@ class CommandHandler(object):
     dict_cmd_name = "cmd_name"
     dict_enabled = "enabled"
 
-    def __init__(self, client: wohbot2.WohBot):
+    def __init__(self, client):
         self.parent_client = client
 
         self.commands = self.get_commands()

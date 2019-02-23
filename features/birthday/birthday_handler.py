@@ -3,7 +3,6 @@ import os
 import json
 import discord
 import datetime
-import pytz
 
 import util
 from features.birthday import user_birthday, channel_birthday, message_birthday
@@ -65,7 +64,7 @@ class BirthdayHandler(object):
             print("Client doesn't have permission to send a message in '{}'.".format(channel_id))
 
     async def happy_birthday_checker(self):
-        mm_dd = str(datetime.datetime.now(pytz.timezone('EST')))[5:10]
+        mm_dd = str(datetime.datetime.now())[5:10]
         for channel_bd in self.channel_birthdays:
             server = self.parent_client.get_server(channel_bd.server_id)
             if server is None:
@@ -88,10 +87,13 @@ class BirthdayHandler(object):
     async def birthday_timer(self):
         await self.parent_client.wait_until_ready()
         while not self.parent_client.is_closed:
-            await asyncio.sleep(util.get_next_day_delta(self.parent_client.settings.get_default_notification_time()))
+            # EST time but +5 for UTC time
+            await asyncio.sleep(
+                util.get_next_day_delta(self.parent_client.settings.get_default_notification_time() + 5))
             await self.happy_birthday_checker()
 
     def check_birthday_lists(self):
+        # Not used
         for channel_bd in self.channel_birthdays:
             server = self.parent_client.get_server(channel_bd.server_id)
             if server is None:

@@ -5,7 +5,7 @@ from datetime import datetime
 
 from features.admin import admin_handler
 from features.birthday import birthday_handler
-# from features.bot_logging import logging_handler
+from features.bot_logging import logging_handler
 from features.music import music_handler
 from features import special_reactions, command_handler, ping_for_help
 
@@ -42,7 +42,7 @@ class WohBot(discord.Client):
 
         self.admin_handler = admin_handler.AdminHandler(self)
         self.birthday_handler = birthday_handler.BirthdayHandler(self)
-        # self.logging_handler = logging_handler.LoggingHandler(self)
+        self.logging_handler = logging_handler.LoggingHandler(self)
         self.music_handler = music_handler.MusicHandler(self)
         self.special_reactions = special_reactions.SpecialReactions(self)
         self.command_handler = command_handler.CommandHandler(self)
@@ -60,7 +60,8 @@ class WohBot(discord.Client):
 
         await client.change_presence(game=discord.Game(name=self.default_presence, type=0))
         await self._get_client_owner()
-
+        self.logging_handler.temporary_channel = self.get_channel("533832271057125397")
+        
         print("-------")
         print("Woh Bot 2.0")
         print("-------")
@@ -91,17 +92,13 @@ class WohBot(discord.Client):
         print(text.format(server_name, str(datetime.now().time())[:8], member_name))
 
     async def on_member_join(self, member: discord.Member):
-        self.print_member_updates("User Joined SERVER '{0}' at {1} - {2}", member)
+        await self.logging_handler.on_member_join(member)
 
     async def on_member_remove(self, member: discord.Member):
-        self.print_member_updates("User Left SERVER '{0}' at {1} - {2}", member)
+        await self.logging_handler.on_member_remove(member)
 
     async def on_voice_state_update(self, before: discord.Member, after: discord.Member):
-        if before.voice.voice_channel is None and after.voice.voice_channel is not None:
-            self.print_member_updates("User Joined VC in '{0}' at {1} - {2}", after)
-
-        if before.voice.voice_channel is not None and after.voice.voice_channel is None:
-            self.print_member_updates("User Left VC in '{0}' at {1} - {2}", after)
+        await self.logging_handler.on_voice_state_update(before, after)
 
     async def on_reaction_add(self, reaction, user):
         if user == self.user:
