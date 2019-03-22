@@ -9,7 +9,6 @@ import features.music.song
 
 class MusicHandler(object):
     music_folder = "data/music"
-    queue_half_length = 5
     # Add music in the correct locations
     music_playlist_paths = {"hqplaylist": os.path.join(music_folder, "hqplaylist"),
                             "deltarune": os.path.join(music_folder, "deltarune"),
@@ -67,6 +66,7 @@ class MusicHandler(object):
                 if len(self.playlist_songs) - 1 > self.playlist_index:
                     await self.next()
                 else:
+                    await asyncio.sleep(4)
                     await self.send_message_check(self.activated_in_channel, "Playlist ended.")
                     await self.leave_vc()
             else:
@@ -178,11 +178,11 @@ class MusicHandler(object):
 
     @staticmethod
     def make_song_line(position, song_name, length):
-        return "`{}. {} | {}`\n\n".format(position, song_name, length)
+        return "`{}. {} | {}`\n\n".format(position, song_name, util.format_duration(length))
 
     @staticmethod
     def make_current_song_line(position, song_name, length):
-        return "**{}.** **{} | {}**\n\n".format(position, song_name, length)
+        return "**{}.** **{} | {}**\n\n".format(position, song_name, util.format_duration(length))
 
     @staticmethod
     def make_arrow_line(point_option):
@@ -202,91 +202,54 @@ class MusicHandler(object):
 
         return "\n**{} songs in playlist | {} total length**".format(total_songs, util.format_duration(total_length))
 
-    def get_lines(self):
-        next_offset = 0
+    def get_queue_embed(self):
+        song_lines = []
 
-        # if len(self.playlist_songs) < 11:
-        #
-        #
-        # for i in range
+        starting_range = 0
+        # middle_range = 5
+        ending_range = 11
 
-    # def get_line(self, i):
-    #     song = None
-    #     counter = self.playlist_index + i
-    #     adjusted_max = 0
-    #     if -4 == i:
-    #         adjusted_max = 1
-    #     elif -3 == i:
-    #         adjusted_max = 2
-    #     elif -2 == i:
-    #         adjusted_max = 3
-    #     elif -1 == i:
-    #         adjusted_max = 4
-    #
-    #     adjusted_index = 0
-    #     while True:
-    #         if counter < 0 + adjusted_max:
-    #             counter += 1
-    #         else:
-    #             adjusted_index = counter
-    #             break
-    #
-    #     while True:
-    #         try:
-    #             song = self.playlist_songs[self.playlist_index + adjusted_index]
-    #             break
-    #         except IndexError:
-    #             adjusted_index -= 1
-    #
-    #     if self.playlist_index + adjusted_index == 0:
-    #         return [self.make_arrow_line("next"),
-    #                 self.make_current_song_line(self.playlist_index + adjusted_index + 1, song.get_info(
-    #                     features.music.song.Song.TITLE), util.format_duration(song.get_duration()))]
-    #     elif self.playlist_index + adjusted_index == len(self.playlist_songs) - 1:
-    #         return [self.make_current_song_line(self.playlist_index + adjusted_index + 1, song.get_info(
-    #             features.music.song.Song.TITLE), util.format_duration(song.get_duration())),
-    #                 self.make_arrow_line("previous")]
-    #     elif
+        if len(self.playlist_songs) < 11:
+            # middle_range = len(self.playlist_songs) / 2
+            ending_range = len(self.playlist_songs)
+        else:
+            if 5 < self.playlist_index < len(self.playlist_songs) - 6:
+                starting_range = self.playlist_index - 5
+                # middle_range = self.playlist_index
+                ending_range = self.playlist_index + 6
+            elif self.playlist_index > len(self.playlist_songs) - 6:
+                starting_range = self.playlist_index - 5
+                # middle_range = self.playlist_index
+                ending_range = len(self.playlist_songs) - 1
 
-    # def get_queue_song_lines(self):
-    #
-    # if self.playlist_index == 0:
-    #     for i in range(range_adjustments):
-    #         if i == 0:
-    #             song_lines += self.make_current_song_line(self.playlist_index + 1, self.current_song.get_info(
-    #                 features.music.song.Song.TITLE), util.format_duration(self.current_song.get_duration()))
-    #             song_lines += self.make_arrow_line("next")
-    #         else:
-    #             song = self.playlist_songs[self.playlist_index + i]
-    #             song_lines += self.make_song_line(self.playlist_index + i + 1, song.get_info(
-    #                 features.music.song.Song.TITLE), util.format_duration(song.get_duration()))
-    #
-    # elif self.playlist_index == len(self.playlist_songs) - 1:
-    #     for i in range(range_adjustments):
-    #         if i == range_adjustments - 1:
-    #             song_lines += self.make_arrow_line("previous")
-    #             song_lines += self.make_current_song_line(self.playlist_index + 1, self.current_song.get_info(
-    #                 features.music.song.Song.TITLE), util.format_duration(self.current_song.get_duration()))
-    #         else:
-    #             song = self.playlist_songs[self.playlist_index - range_adjustments + i + 1]
-    #             song_lines += self.make_song_line(self.playlist_index - range_adjustments + i + 2, song.get_info(
-    #                 features.music.song.Song.TITLE), util.format_duration(song.get_duration()))
+        for i in range(starting_range, ending_range):
+            song = self.playlist_songs[i]
+            if i == self.playlist_index:
+                if 0 == self.playlist_index:
+                    song_lines.append(self.make_current_song_line(i + 1, song.get_info(features.music.song.Song.TITLE),
+                                                                  song.get_duration()))
+                    song_lines.append(self.make_arrow_line("next"))
+                elif len(self.playlist_songs) - 1 == self.playlist_index:
+                    song_lines.append(self.make_arrow_line("previous"))
+                    song_lines.append(self.make_current_song_line(i + 1, song.get_info(features.music.song.Song.TITLE),
+                                                                  song.get_duration()))
+                else:
+                    song_lines.append(self.make_arrow_line("previous"))
+                    song_lines.append(self.make_current_song_line(i + 1, song.get_info(features.music.song.Song.TITLE),
+                                                                  song.get_duration()))
+                    song_lines.append(self.make_arrow_line("next"))
+            else:
+                song_lines.append(
+                    self.make_song_line(i + 1, song.get_info(features.music.song.Song.TITLE), song.get_duration()))
 
-    # def get_queue_embed(self):
-    #     song_lines = []
-    #
-    #     for i in range(-5, 6):
-    #         line = self.get_line(i)
-    #         if
-    #
-    #     song_lines.append(self.make_length_line(self.playlist_songs))
-    #
-    #     text = ""
-    #     for line in song_lines:
-    #         text += line
-    #
-    #     return util.make_embed(util.colour_musical, text,
-    #                            "Playlist '{}'".format(self.playlist_name), util.image_music_note, None)
+        song_lines.append(self.make_length_line(self.playlist_songs))
+
+        text = ""
+        for line in song_lines:
+            text += line
+
+        return util.make_embed(colour=util.colour_musical, description=text, author_icon_url=util.image_music_note,
+                               author_name="Playlist '{}'".format(self.playlist_name))
 
     def get_now_playing_embed(self):
         title = "N/A"

@@ -7,7 +7,7 @@ class Queue(command_template.Command):
     def __init__(self, client):
         super(Queue, self).__init__(client)
 
-        self.enabled = False
+        self.enabled = True
         self.perm_level = self.permission_levels["everyone"]
         self.cmd_name = "q"
         self.arguments = ""
@@ -20,8 +20,8 @@ class Queue(command_template.Command):
         if self.parent_client.music_handler.is_in_vc(message):
             if self.parent_client.music_handler.playlist_songs is not None:
                 pass
-                # embed = self.parent_client.music_handler.get_queue_embed()
-                # await  self.parent_client.send_message(message.channel, embed=embed)
+                embed = self.parent_client.music_handler.get_queue_embed()
+                await  self.send_message_check(message.channel, embed=embed)
             else:
                 await self.send_message_check(message.channel, "There's no playlist on, use 'np' instead.")
         else:

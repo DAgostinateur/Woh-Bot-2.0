@@ -1,7 +1,7 @@
 import discord
 import pytz
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import util
 import wohbot2
@@ -15,7 +15,8 @@ class LoggingHandler(object):
 
         self.temporary_channel = None
 
-    def print_member_updates(self, text: str, member: discord.Member):
+    @staticmethod
+    def print_member_updates(text: str, member: discord.Member):
         member_name = member.name
         server_name = member.server.name
         if not util.is_printable(member_name):
@@ -44,7 +45,7 @@ class LoggingHandler(object):
             self.print_member_updates("User Left VC in '{0}' at {1} - {2}", after)
 
     async def log_info(self, logging_type, member: discord.Member):
-        time = "Done at {} EST".format(str(datetime.now(pytz.timezone('EST')))[:-13])
+        time = "Done at {} EST".format(str(datetime.now(pytz.timezone('EST')) + timedelta(hours=1))[:-13])
         description = "{} (ID: {})".format(member.mention, member.id)
         if logging_type == self.log_types["voice_join"]:
             embed = util.make_embed(description=description, author_icon_url=member.avatar_url, footer_text=time,

@@ -88,8 +88,9 @@ class BirthdayHandler(object):
         await self.parent_client.wait_until_ready()
         while not self.parent_client.is_closed:
             # EST time but +5 for UTC time
+            # +6 for when its one hour behind
             await asyncio.sleep(
-                util.get_next_day_delta(self.parent_client.settings.get_default_notification_time() + 5))
+                util.get_next_day_delta(self.parent_client.settings.get_default_notification_time() + 6))
             await self.happy_birthday_checker()
 
     def check_birthday_lists(self):

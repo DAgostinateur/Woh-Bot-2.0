@@ -15,7 +15,6 @@ import util
 
 
 # TODO:
-# Figure out how to do the queue command, this is so difficult.
 # Aliases for commands.
 # Flatter code.
 # Remake the help command, there's too many commands displayed, drowns the channel.
@@ -31,7 +30,7 @@ class WohBot(discord.Client):
     def __init__(self):
         super(WohBot, self).__init__()
 
-        self.version = "2.0.96"
+        self.version = "2.1.0"
 
         util.check_folder(self.data_folder)
 
@@ -61,7 +60,7 @@ class WohBot(discord.Client):
         await client.change_presence(game=discord.Game(name=self.default_presence, type=0))
         await self._get_client_owner()
         self.logging_handler.temporary_channel = self.get_channel("533832271057125397")
-        
+
         print("-------")
         print("Woh Bot 2.0")
         print("-------")
@@ -79,17 +78,6 @@ class WohBot(discord.Client):
             await self.special_reactions.check_message(message)
             await self.command_handler.check_message(message)
             await self.ping_for_help.check_message(message)
-
-    def print_member_updates(self, text: str, member: discord.Member):
-        member_name = member.name
-        server_name = member.server.name
-        if not util.is_printable(member_name):
-            member_name = member.id
-
-        if not util.is_printable(server_name):
-            server_name = member.server.id
-
-        print(text.format(server_name, str(datetime.now().time())[:8], member_name))
 
     async def on_member_join(self, member: discord.Member):
         await self.logging_handler.on_member_join(member)
