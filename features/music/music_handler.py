@@ -206,21 +206,17 @@ class MusicHandler(object):
         song_lines = []
 
         starting_range = 0
-        # middle_range = 5
         ending_range = 11
 
         if len(self.playlist_songs) < 11:
-            # middle_range = len(self.playlist_songs) / 2
             ending_range = len(self.playlist_songs)
         else:
             if 5 < self.playlist_index < len(self.playlist_songs) - 6:
                 starting_range = self.playlist_index - 5
-                # middle_range = self.playlist_index
                 ending_range = self.playlist_index + 6
-            elif self.playlist_index > len(self.playlist_songs) - 6:
-                starting_range = self.playlist_index - 5
-                # middle_range = self.playlist_index
-                ending_range = len(self.playlist_songs) - 1
+            elif self.playlist_index > len(self.playlist_songs) - 7:
+                starting_range = len(self.playlist_songs) - 11
+                ending_range = len(self.playlist_songs)
 
         for i in range(starting_range, ending_range):
             song = self.playlist_songs[i]

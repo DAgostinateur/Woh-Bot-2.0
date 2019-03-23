@@ -30,7 +30,7 @@ class WohBot(discord.Client):
     def __init__(self):
         super(WohBot, self).__init__()
 
-        self.version = "2.1.0"
+        self.version = "2.1.01"
 
         util.check_folder(self.data_folder)
 
