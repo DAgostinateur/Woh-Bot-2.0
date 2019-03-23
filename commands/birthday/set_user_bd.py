@@ -40,7 +40,6 @@ class SetUserBD(command_template.Command):
 
                 await self.send_message_check(message.channel, "Your birthday has been set for {} {}!".format(
                     user_bd.get_readable_month(), user_bd.get_readable_day()))
-
         else:
             if self.parent_client.birthday_handler.get_user_bd(message.author.id, message.server.id) is not None:
                 self.parent_client.birthday_handler.remove_user_birthday(message.author.id, message.server.id)

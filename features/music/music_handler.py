@@ -145,20 +145,27 @@ class MusicHandler(object):
         else:
             return "Nothing to pause."
 
-    async def next(self):
+    async def next(self, skip=1):
         self.player.stop()
+
         if self.playlist_index >= len(self.playlist_songs) - 1:
             await self.send_message_check(self.activated_in_channel, "Playlist ended.")
             await self.leave_vc()
             return
-        self.playlist_index += 1
+
+        self.playlist_index += skip
+
+        if self.playlist_index >= len(self.playlist_songs) - 1:
+            self.playlist_index = len(self.playlist_songs) - 1
+
         await self.make_player(self.playlist_songs[self.playlist_index])
 
-    async def previous(self):
+    async def previous(self, back=1):
         self.player.stop()
-        self.playlist_index -= 1
+        self.playlist_index -= back
         if 0 > self.playlist_index:
             self.playlist_index = 0
+
         await self.make_player(self.playlist_songs[self.playlist_index])
 
     def set_volume(self, vol):
