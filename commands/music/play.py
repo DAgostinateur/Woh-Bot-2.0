@@ -12,7 +12,7 @@ class Play(command_template.Command):
         self.cmd_name = "play"
         self.arguments = "[song/playlist]"
         self.help_description = "'deltarune' plays the entire OST. " \
-                                "'hqplaylist' plays D'Agostinateur Woh's entire playlist." \
+                                "'hqplaylist' plays D'Agostinatrice Woh's entire playlist." \
                                 "There might be a 0 (not including 0 Morg) to 4 second delay between songs."
 
     async def command(self, message: discord.Message):
@@ -25,6 +25,6 @@ class Play(command_template.Command):
             await self.parent_client.music_handler.play(message, music_option)
         else:
             if self.parent_client.music_handler.playlist_songs is None:
-                await self.send_message_check(message.channel, "There's a song playing.")
+                await self.send_message_check(message.channel, "You have to join the VC to use this command.")
             else:
                 await self.send_message_check(message.channel, "There's a playlist playing.")

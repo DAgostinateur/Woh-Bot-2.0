@@ -15,12 +15,14 @@ import util
 
 
 # TODO:
-# Aliases for commands.
+# Search command for music
 # Flatter code.
 # Remake the help command, there's too many commands displayed, drowns the channel.
+#   So categorize commands by what they do, ie. music commands together, birthday together, etc.
 # Better way to load commands.
 # Set different prefixes for servers.
 # Proper Logging.
+# Aliases for commands.
 # Control any self hosted servers, basically finish what I started with the first bot.
 
 
@@ -45,7 +47,7 @@ class WohBot(discord.Client):
         self.music_handler = music_handler.MusicHandler(self)
         self.special_reactions = special_reactions.SpecialReactions(self)
         self.command_handler = command_handler.CommandHandler(self)
-        self.ping_for_help = ping_for_help.PingForHelp(self)  # This needs a better name
+        self.ping_for_help = ping_for_help.PingForHelp(self)
 
         self.loop.create_task(self.birthday_handler.birthday_timer())
         self.loop.create_task(self.music_handler.disconnect_timer())
@@ -55,7 +57,7 @@ class WohBot(discord.Client):
         self.owner = app_info.owner
 
     async def on_ready(self):
-        # self.birthday_handler.check_birthday_lists()
+        self.birthday_handler.check_birthday_lists()
 
         await client.change_presence(game=discord.Game(name=self.default_presence, type=0))
         await self._get_client_owner()

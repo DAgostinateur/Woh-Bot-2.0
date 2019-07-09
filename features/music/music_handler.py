@@ -110,7 +110,7 @@ class MusicHandler(object):
         except (KeyError, TypeError):
             await self.send_message_check(message.channel,
                                           "'deltarune' plays the entire OST. "
-                                          "'hqplaylist' plays D'Agostinateur Woh's entire playlist.")
+                                          "'hqplaylist' plays D'Agostinatrice Woh's entire playlist.")
             return
 
         await self.send_message_check(message.channel, "Loading playlist.")

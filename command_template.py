@@ -6,12 +6,15 @@ import util
 
 class Command(object):
     permission_levels = {"none": 0, "everyone": 1, "admin": 2, "owner": 3}
+    command_categories = {"uncategorized": 10, "birthday": 11, "logging": 12, "cant_be_disabled": 13, "music": 14,
+                          "admin": 15}
 
     def __init__(self, handler):
         self.handler = handler
 
         self.enabled = False
         self.perm_level = self.permission_levels["none"]
+        self.cmd_category = self.command_categories["uncategorized"]
         self.cmd_name = ""
         self.arguments = ""
         self.option_letters = ""  # Example: w!listuserbd -da

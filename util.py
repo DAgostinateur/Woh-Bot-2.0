@@ -14,13 +14,22 @@ colour_royal_purple = 7885225
 colour_birthday = 16428082
 colour_admin = 27476
 
-image_confetti = "https://emojipedia-us.s3.dualstack.us-west-1." \
-                 "amazonaws.com/thumbs/120/twitter/154/confetti-ball_1f38a.png"
-image_lock = "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/twitter/154/lock_1f512.png"
-image_question_mark = "https://emojipedia-us.s3.dualstack.us-west-1." \
-                      "amazonaws.com/thumbs/120/twitter/154/white-question-mark-ornament_2754.png"
+image_uncategorized_ledger = "https://emojipedia-us.s3.dualstack.us-west-1." \
+                             "amazonaws.com/thumbs/120/twitter/185/ledger_1f4d2.png"
+image_birthday = "https://emojipedia-us.s3.dualstack.us-west-1." \
+                 "amazonaws.com/thumbs/120/twitter/185/birthday-cake_1f382.png"
+image_logging_keylock = "https://emojipedia-us.s3.dualstack.us-west-1." \
+                        "amazonaws.com/thumbs/120/twitter/185/closed-lock-with-key_1f510.png"
+image_nodisabling_info = "https://emojipedia-us.s3.dualstack.us-west-1." \
+                         "amazonaws.com/thumbs/120/twitter/185/information-source_2139.png"
 image_music_note = "https://emojipedia-us.s3.dualstack.us-west-1." \
                    "amazonaws.com/thumbs/120/twitter/154/multiple-musical-notes_1f3b6.png"
+image_admin_lock = "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/twitter/154/lock_1f512.png"
+
+image_confetti = "https://emojipedia-us.s3.dualstack.us-west-1." \
+                 "amazonaws.com/thumbs/120/twitter/154/confetti-ball_1f38a.png"
+image_question_mark = "https://emojipedia-us.s3.dualstack.us-west-1." \
+                      "amazonaws.com/thumbs/120/twitter/154/white-question-mark-ornament_2754.png"
 
 
 def make_embed(description, author_name, author_icon_url=None, thumbnail_url=None, footer_text=None, fields=None,

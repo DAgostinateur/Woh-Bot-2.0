@@ -6,8 +6,8 @@ import util
 
 
 class SpecialReactions:
-    woh_emojis = ["woh", "gaywoh1", "gaywoh2", "panwoh1", "panwoh2", "owoh", "awoh", "wah", "gaoh", "festivewoh",
-                  "spookywoh", "transwoh", "grandwoh"]
+    woh_emojis = ["woh", "gaywoh1", "gaywoh2", "panwoh1", "panwoh2", "owoh", "wah", "gaoh", "festivewoh",
+                  "spookywoh", "transwoh"]
     sans_note_emojis = ["sansD3", "sansD3_2", "sansD4", "sansA3"]
 
     def __init__(self, client):
@@ -46,6 +46,9 @@ class SpecialReactions:
 
         if 'sans' in message.content.lower():
             await self.loop_react(message, self.sans_note_emojis)
+
+        if 'cringe' in message.content.lower():
+            await self.react(message, 'kindacringe')
 
         if 'epic' in message.content.lower():
             await self.react(message, 'hatdab')
