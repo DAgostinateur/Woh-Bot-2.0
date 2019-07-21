@@ -2,6 +2,7 @@ import discord
 import os
 import asyncio
 import random
+import difflib
 
 import util
 import features.music.song
@@ -71,7 +72,7 @@ class MusicHandler(object):
                     await self.leave_vc()
             else:
                 await self.send_message_check(self.activated_in_channel,
-                                              "Nobody hsa been in this voice channel for 10 minutes, bi bye.")
+                                              "Nobody has been in this voice channel for 10 minutes, bi bye.")
                 await self.leave_vc()
 
     def is_in_vc(self, message: discord.Message):
@@ -167,6 +168,24 @@ class MusicHandler(object):
             self.playlist_index = 0
 
         await self.make_player(self.playlist_songs[self.playlist_index])
+
+    async def search(self, searched_song):
+        title_list = []
+        for song in self.playlist_songs:
+            title_list.append(song.get_info(features.music.song.Song.TITLE))
+
+        song_title_found = difflib.get_close_matches(searched_song, title_list, n=1, cutoff=0.5)
+        if len(song_title_found) == 0:
+            return "No song found using '{}'".format(searched_song)
+
+        for index, song in enumerate(self.playlist_songs):
+            if song_title_found[0] == song.get_info(features.music.song.Song.TITLE):
+                self.player.stop()
+                util.swap_position(self.playlist_songs, self.playlist_index, index)
+                await self.make_player(self.playlist_songs[self.playlist_index])
+                return "Song '{}' found.".format(song_title_found)
+
+        return "Something broke '{}'".format(song_title_found)
 
     def set_volume(self, vol):
         self.volume = vol

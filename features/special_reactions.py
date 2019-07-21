@@ -47,6 +47,9 @@ class SpecialReactions:
         if 'sans' in message.content.lower():
             await self.loop_react(message, self.sans_note_emojis)
 
+        if 'nice' in message.content.lower():
+            await self.react(message, 'verynice')
+
         if 'cringe' in message.content.lower():
             await self.react(message, 'kindacringe')
 

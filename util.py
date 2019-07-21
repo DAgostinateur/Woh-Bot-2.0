@@ -122,6 +122,10 @@ def is_int(text):
         return False
 
 
+def swap_position(list, pos1, pos2):
+    list[pos1], list[pos2] = list[pos2], list[pos1]
+    return list
+
 def split_list(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]
