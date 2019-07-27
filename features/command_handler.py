@@ -1,14 +1,13 @@
-import discord
 import re
 
-import wohbot2
+import discord
 
+from commands import set_presence, avatar
 from commands.admin import list_user_admin, add_user_admin, rm_user_admin
 from commands.birthday import (set_channel_bd, show_channel_bd, set_user_bd, set_notif_time, list_user_bd,
                                manual_bd_check, show_message_bd, set_message_bd)
 from commands.cant_be_disabled import disable, enable, help
 from commands.music import play, leave, repeat, now_playing, resume, pause, volume, next, previous, queue, search
-from commands import set_presence
 
 
 class CommandHandler(object):
@@ -70,7 +69,7 @@ class CommandHandler(object):
                 set_message_bd.SetMessageBD(self), show_message_bd.ShowMessageBD(self),
                 set_channel_bd.SetChannelBD(self), show_channel_bd.ShowChannelBD(self),
                 list_user_admin.ListUserAdmin(self), list_user_bd.ListUserBD(self), set_user_bd.SetUserBD(self),
-                play.Play(self), leave.Leave(self), resume.Resume(self), pause.Pause(self),
+                avatar.Avatar(self), play.Play(self), leave.Leave(self), resume.Resume(self), pause.Pause(self),
                 now_playing.NowPlaying(self), repeat.Repeat(self), volume.Volume(self), previous.Previous(self),
                 next.Next(self), queue.Queue(self), search.Search(self), help.Help(self)]
 
