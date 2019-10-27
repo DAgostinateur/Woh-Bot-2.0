@@ -6,6 +6,7 @@ import string
 import hidden
 
 
+colour_msg_delete = 15158332
 colour_voice = 481716
 colour_join = 4304663
 colour_leave = 13114910

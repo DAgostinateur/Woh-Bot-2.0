@@ -11,9 +11,9 @@ class Play(command_template.Command):
         self.perm_level = self.permission_levels["everyone"]
         self.cmd_name = "play"
         self.arguments = "[song/playlist]"
-        self.help_description = "'deltarune' plays the entire OST. " \
-                                "'hqplaylist' plays D'Agostinatrice Woh's entire playlist." \
-                                "There might be a 0 (not including 0 Morg) to 4 second delay between songs."
+        self.help_description = "'celeste' plays the entire Celeste OST.\n" \
+                                "'deltarune' plays the entire Deltarune Chapter 1 OST.\n'" \
+                                "'hqplaylist' plays D'Agostinatrice Woh's entire playlist."
 
     async def command(self, message: discord.Message):
         if not self.execute_cmd(message):

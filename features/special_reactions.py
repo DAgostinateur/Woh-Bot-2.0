@@ -7,7 +7,7 @@ import util
 
 class SpecialReactions:
     woh_emojis = ["woh", "gaywoh1", "gaywoh2", "panwoh1", "panwoh2", "owoh", "wah", "gaoh", "festivewoh",
-                  "spookywoh", "transwoh"]
+                  "spookywoh", "transwoh", "wohns"]
     sans_note_emojis = ["sansD3", "sansD3_2", "sansD4", "sansA3"]
 
     def __init__(self, client):

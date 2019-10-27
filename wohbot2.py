@@ -32,7 +32,7 @@ class WohBot(discord.Client):
     def __init__(self):
         super(WohBot, self).__init__()
 
-        self.version = "2.1.11"
+        self.version = "2.1.12"
 
         util.check_folder(self.data_folder)
 
@@ -71,6 +71,9 @@ class WohBot(discord.Client):
         print("Prefix: " + self.prefix)
         print("Version: " + self.version)
         print("-------\n")
+
+    async def on_message_delete(self, message: discord.Message):
+        await self.logging_handler.on_message_delete(message)
 
     async def on_message(self, message: discord.Message):
         if message.author == self.user:

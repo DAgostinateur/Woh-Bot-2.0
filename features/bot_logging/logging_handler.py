@@ -8,7 +8,7 @@ import wohbot2
 
 
 class LoggingHandler(object):
-    log_types = {"voice_join": 0, "voice_leave": 1, "member_join": 2, "member_leave": 3}
+    log_types = {"voice_join": 0, "voice_leave": 1, "member_join": 2, "member_leave": 3, "message_delete": 4}
 
     def __init__(self, client: wohbot2.WohBot):
         self.parent_client = client
@@ -44,7 +44,10 @@ class LoggingHandler(object):
             await self.log_info(self.log_types["voice_leave"], after)
             self.print_member_updates("User Left VC in '{0}' at {1} - {2}", after)
 
-    async def log_info(self, logging_type, member: discord.Member):
+    async def on_message_delete(self, message: discord.Message):
+        await self.log_info(self.log_types["message_delete"], message.author, message)
+
+    async def log_info(self, logging_type, member: discord.Member = None, message: discord.Message = None):
         time = "Done at {} EST".format(str(datetime.now(pytz.timezone('EST')) + timedelta(hours=1))[:-13])
         description = "{} (ID: {})".format(member.mention, member.id)
         if logging_type == self.log_types["voice_join"]:
@@ -68,6 +71,13 @@ class LoggingHandler(object):
                                     author_name="User Left Server '{}'".format(member.server.name),
                                     colour=util.colour_leave)
             await self.send_log(embed=embed)
+        elif logging_type == self.log_types["message_delete"]:
+            embed = util.make_embed(description=description, author_icon_url=member.avatar_url, footer_text=time,
+                                    author_name="Message deleted in '{}' ({})".format(message.server.name,
+                                                                                      message.channel.name),
+                                    colour=util.colour_msg_delete,
+                                    fields=[{"name": "Content", "inline": "true", "value": message.content}])
+            await self.send_log(embed=embed)
 
     async def send_log(self, embed=None):
         try:
@@ -78,3 +88,6 @@ class LoggingHandler(object):
             print("Client doesn't have permission to send a message in '{}'.".format(self.temporary_channel.id))
         except discord.InvalidArgument:
             print("'temporary_channel' is None, channel doesnt exist")
+        except discord.HTTPException:
+            pass
+            # Message contents too long for field

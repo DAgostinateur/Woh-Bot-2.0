@@ -91,9 +91,10 @@ class BirthdayHandler(object):
             # +6 for when its one hour behind
             await asyncio.sleep(util.get_next_day_delta(self.parent_client.settings.get_default_notification_time()))
             await self.happy_birthday_checker()
+            await asyncio.sleep(5)
 
     def check_birthday_lists(self):
-        # Not used
+        # used
         for channel_bd in self.channel_birthdays:
             server = self.parent_client.get_server(channel_bd.server_id)
             if server is None:

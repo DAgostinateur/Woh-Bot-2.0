@@ -13,7 +13,8 @@ class MusicHandler(object):
     # Add music in the correct locations
     music_playlist_paths = {"hqplaylist": os.path.join(music_folder, "hqplaylist"),
                             "deltarune": os.path.join(music_folder, "deltarune"),
-                            "playlisttest": os.path.join(music_folder, "castle_constellations")}
+                            "playlisttest": os.path.join(music_folder, "castle_constellations"),
+                            "celeste": os.path.join(music_folder, "celeste")}
 
     def __init__(self, client):
         self.parent_client = client
@@ -109,9 +110,9 @@ class MusicHandler(object):
             # Should never be NoneType
             playlist = self.music_playlist_paths[music_option]
         except (KeyError, TypeError):
-            await self.send_message_check(message.channel,
-                                          "'deltarune' plays the entire OST. "
-                                          "'hqplaylist' plays D'Agostinatrice Woh's entire playlist.")
+            await self.send_message_check(message.channel, "'celeste' plays the entire Celeste OST.\n"
+                                                           "'deltarune' plays the entire Deltarune Chapter 1 OST.\n'"
+                                                           "'hqplaylist' plays D'Agostinatrice Woh's entire playlist.")
             return
 
         await self.send_message_check(message.channel, "Loading playlist.")

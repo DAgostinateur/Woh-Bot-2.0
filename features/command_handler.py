@@ -2,7 +2,7 @@ import re
 
 import discord
 
-from commands import set_presence, avatar
+from commands import set_presence, avatar, erp
 from commands.admin import list_user_admin, add_user_admin, rm_user_admin
 from commands.birthday import (set_channel_bd, show_channel_bd, set_user_bd, set_notif_time, list_user_bd,
                                manual_bd_check, show_message_bd, set_message_bd)
@@ -71,7 +71,7 @@ class CommandHandler(object):
                 list_user_admin.ListUserAdmin(self), list_user_bd.ListUserBD(self), set_user_bd.SetUserBD(self),
                 avatar.Avatar(self), play.Play(self), leave.Leave(self), resume.Resume(self), pause.Pause(self),
                 now_playing.NowPlaying(self), repeat.Repeat(self), volume.Volume(self), previous.Previous(self),
-                next.Next(self), queue.Queue(self), search.Search(self), help.Help(self)]
+                next.Next(self), queue.Queue(self), search.Search(self), erp.Erp(self), help.Help(self)]
 
     async def check_message(self, message: discord.Message):
         for cmd in self.commands:
